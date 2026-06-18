@@ -1,0 +1,2577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Informes de Convivencia - Escuela Tecnica Ingeniero Eduardo Latzina</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --primary-dark: #172554;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+
+        .header-title p {
+            font-size: 0.85rem;
+            color: #93c5fd;
+        }
+
+
+        .simulator-badge {
+            background-color: var(--accent);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+
+        .role-selector-bar {
+            background-color: #e2e8f0;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .role-selector-bar select {
+            padding: 5px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            background-color: white;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+
+        .container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        /* Lists and Queue items */
+        .report-list {
+            list-style: none;
+        }
+
+
+        .report-item {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+
+        .report-item:hover {
+            border-color: var(--primary-light);
+            background-color: #f0fdf4;
+        }
+
+
+        .report-item.active {
+            border-left: 5px solid var(--primary);
+            background-color: #eff6ff;
+            font-weight: 500;
+        }
+
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+
+        .badge-leve { background-color: #fef3c7; color: #d97706; }
+        .badge-grave { background-color: #fee2e2; color: #dc2626; }
+        .badge-muygrave { background-color: #fca5a5; color: #7f1d1d; }
+        .badge-suspenso { background-color: #f1f5f9; color: #475569; }
+
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+
+        input[type="text"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #fff;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+        }
+
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+
+        input[disabled], select[disabled], textarea[disabled] {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+
+        /* Workflow steps and visual hierarchy */
+        .section-block {
+            background: #fafafa;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+
+        .section-block h3 {
+            font-size: 1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .workflow-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #edd;
+            border-radius: 30px;
+            overflow: hidden;
+            background-color: #e2e8f0;
+        }
+
+
+        .workflow-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+
+        .workflow-step.completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+
+        .workflow-step.current {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+
+        /* Toast Alert System */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+
+        .toast {
+            background-color: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+
+        /* Info boxes */
+        .info-tag-container {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+
+
+    <header>
+        <div class="header-title">
+            <h1>Sistema de Convivencia Escolar</h1>
+            <p>Escuela Tecnica N-35 Ingeniero Eduardo Latzina</p>
+        </div>
+        <div>
+            <span class="simulator-badge">PROTOTIPO FUNCIONAL V1.0</span>
+        </div>
+    </header>
+
+
+    <div class="role-selector-bar">
+        <span><strong>Simular Vista de Usuario:</strong></span>
+        <select id="roleSelector" onchange="changeSimulationRole()">
+            <option value="Profesor">Profesor (Carga y Visualización)</option>
+            <option value="Alumno">Alumno (Carga su Descargo)</option>
+            <option value="Regente">Regente / Directivo (Dictamina Falta, Firma y Cierre)</option>
+            <option value="Tutor">Padre/Madre/Tutor (Notificación)</option>
+            <option value="PAT">Profesor Acompañante Trayectoria - PAT (Consulta y Notas)</option>
+            <option value="Secretaria">Secretaría (Solo Lectura Completa)</option>
+        </select>
+        <span id="rolePermissionsHint" style="font-style: italic; color: #475569;"></span>
+    </div>
+
+
+    <div class="container grid-layout">
+       
+        <!-- SIDEBAR: Lista de Informes Activos e Historial -->
+        <aside>
+            <div class="card" style="position: sticky; top: 20px;">
+                <div class="card-title">
+                    <span>Informes Activos</span>
+                    <button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="createNewBlankReport()">+ Nuevo</button>
+                </div>
+                <div class="info-tag-container">
+                    Haga clic en un informe para cargar su estado actual en el formulario principal.
+                </div>
+                <ul class="report-list" id="reportsQueue">
+                    <!-- Dynamic Loading -->
+                </ul>
+            </div>
+        </aside>
+
+
+        <!-- MAIN INTERFACE: Formulario Unificado Digital del Ministerio -->
+        <main>
+            <div class="card">
+                <div class="workflow-indicator" id="workflowProgress">
+                    <div class="workflow-step completed" id="ws-1">1. Creación</div>
+                    <div class="workflow-step" id="ws-2">2. Descargo</div>
+                    <div class="workflow-step" id="ws-3">3. Consejos</div>
+                    <div class="workflow-step" id="ws-4">4. Dictamen</div>
+                    <div class="workflow-step" id="ws-5">5. Notificado</div>
+                </div>
+
+
+                <form id="convivenciaForm" onsubmit="handleFormSubmit(event)">
+                   
+                    <!-- SECCIÓN 1: Encabezado e Identificación del Alumno -->
+                    <div class="section-block">
+                        <h3>1. Encabezado e Identificación del Alumno</h3>
+                        <div class="form-group" style="position: relative;">
+                            <label>Buscar Alumno por Nombre o DNI</label>
+                            <input type="text" id="studentSearchInput" placeholder="Escriba nombre o DNI para localizar al alumno sin elegir curso por curso..." oninput="filterStudentSearch()" autocomplete="off" />
+                            <div id="studentSearchResults" style="display: none; position: absolute; z-index: 10; left: 0; right: 0; background-color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow);"></div>
+                        </div>
+                        <div class="form-row" style="grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Año</label>
+                                <select id="filter_year" onchange="updateStudentSelector()">
+                                    <!-- Generado de 1 a 6 -->
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>División</label>
+                                <select id="filter_division" onchange="updateStudentSelector()">
+                                    <!-- Generado de 1 a 9 -->
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Especialidad</label>
+                                <select id="filter_specialty" onchange="updateStudentSelector()">
+                                    <option value="Computación">Computación</option>
+                                    <option value="Automotor">Automotor</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Estudiante *</label>
+                                <select id="form_student_id" required onchange="syncStudentData()">
+                                    <!-- Se filtra dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Jurisdicción / Institución</label>
+                                <input type="text" value="Ministerio de Educación CABA - Escuela Técnica Secundaria" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label>Año y División Confirmado</label>
+                                <input type="text" id="form_student_course" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>DNI / Legajo</label>
+                                <input type="text" id="form_student_dni" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                            <div class="form-group">
+                                <label>Email Institucional Alumno</label>
+                                <input type="text" id="form_student_email" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 2: Descripción del Hecho -->
+                    <div class="section-block">
+                        <h3>2. Descripción del Hecho (Transgresión)</h3>
+                        <div class="form-group">
+                            <label>Detalle de la acción (Conducta observada contraria al Reglamento de Convivencia) *</label>
+                            <textarea id="form_description" rows="4" required placeholder="Describa de manera clara, objetiva y detallada lo ocurrido con fecha y lugar de la transgresión..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 3: Solicitud de Sanción (Origen) -->
+                    <div class="section-block">
+                        <h3>3. Origen y Emisor de la Solicitud</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Docente / Emisor *</label>
+                                <input type="text" id="form_issuer_name" required placeholder="Nombre completo del emisor" />
+                            </div>
+                            <div class="form-group">
+                                <label>Cargo / Función *</label>
+                                <select id="form_issuer_role" required>
+                                    <option value="Profesor">Profesor de Asignatura</option>
+                                    <option value="Preceptor">Preceptor de Curso</option>
+                                    <option value="Tutor">Tutor / Coordinador</option>
+                                    <option value="Regente">Regente Técnico/De Cultura</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fecha de Emisión *</label>
+                                <input type="date" id="form_issue_date" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Firma Digital Emisor</label>
+                                <input type="text" id="form_issuer_signature" readonly value="Pendiente de guardado" style="font-style: italic; background-color: #f1f5f9; color: #475569;" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 4: Descargo del Alumno/a -->
+                    <div class="section-block" id="block_student_statement">
+                        <h3>4. Descargo del Alumno/a (Garantía de Derecho a ser Escuchado)</h3>
+                        <div class="info-tag-container" style="background-color: #fffbeb; border-color: var(--accent); color: #92400e;">
+                            Esta sección es de uso exclusivo para el estudiante implicado o su representante directo durante el proceso.
+                        </div>
+                        <div class="form-group">
+                            <label>Testimonio y Versión del Alumno/a</label>
+                            <textarea id="form_student_text" rows="3" placeholder="El estudiante puede redactar de puño y letra digital su versión de los acontecimientos..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 5: Informes de Consejos Colegiados (Uso Específico) -->
+                    <div class="section-block" id="block_councils">
+                        <h3>5. Informes de Consejos Colegiados e Intervención PAT</h3>
+                        <div class="form-group">
+                            <label>Informe del Consejo de Aula / Observaciones del PAT (Profesor Acompañante de Trayectoria)</label>
+                            <textarea id="form_pat_notes" rows="2" placeholder="Anotaciones de acompañamiento escolar o evolución del curso..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Informe del Consejo de Convivencia Institucional</label>
+                            <textarea id="form_council_notes" rows="2" placeholder="Resolución o análisis del cuerpo general colegiado de convivencia..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 6: Observaciones Adicionales -->
+                    <div class="section-block">
+                        <h3>6. Observaciones Adicionales</h3>
+                        <div class="form-group">
+                            <label>Notas de Autoridades o Aclaraciones Generales</label>
+                            <textarea id="form_additional_notes" rows="2" placeholder="Espacio libre para añadir aclaraciones de las partes intervinientes o DOE..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 7: Clasificación y Dictamen de la Falta -->
+                    <div class="section-block" id="block_dictum">
+                        <h3>7. Clasificación y Dictamen Final de la Falta (Uso Exclusivo Directivo)</h3>
+                        <div class="form-group">
+                            <label>Gravedad de la Instancia Dictaminada</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="LEVE" id="rad_leve"> 1º Instancia: LEVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="GRAVE" id="rad_grave"> 2º Instancia: GRAVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="MUY GRAVE" id="rad_muygrave"> 3º Instancia: MUY GRAVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="SUSPENSO" id="rad_suspenso"> Dejar en Advertencia (Suspenso)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Otra Consideración o Medida Pedagógica Adoptada</label>
+                            <input type="text" id="form_other_considerations" placeholder="Ej. Citación a firma presencial, tareas comunitarias en taller, etc." />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Firma Autoridad (Regente/Rector)</label>
+                                <input type="text" id="form_director_signature" readonly style="font-weight: bold; background-color: #f1f5f9;" value="No Firmado" />
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Dictamen Final</label>
+                                <input type="date" id="form_director_date" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 8: Módulo de Notificaciones y Conformidad -->
+                    <div class="section-block" id="block_notifications">
+                        <h3>8. Módulo de Notificaciones Automáticas</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" id="chk_notify_student"> Notificación Electrónica Alumno (Acusa Recibo)
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" id="chk_notify_parent"> Notificación Confirmada Padre/Madre/Tutor
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <!-- ACCIONES DEL FORMULARIO -->
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="resetFormToActive()">Restablecer Campos</button>
+                        <button type="submit" class="btn btn-success" id="submitBtn">Guardar Modificaciones / Registrar Acciones</button>
+                    </div>
+
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- Container for instant feedback logs (simulating real backend tracking) -->
+    <div class="container">
+        <div class="card" style="background-color: #1e293b; color: #f8fafc;">
+            <div class="card-title" style="color: #38bdf8; border-color: #334155;">Consola de Simulación de Procesos de Negocio (Backend Logs)</div>
+            <pre id="backendLogs" style="font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; max-height: 150px;">[INFO] Inicializando base de datos local simulada en memoria... OK
+[INFO] Cargados diccionarios maestros: Profesores (60), Preceptores (10), Regentes (7), Alumnos (450).
+[SISTEMA] Listo para operar bajo el Plan CABA Secundaria Aprende.</pre>
+        </div>
+    </div>
+
+
+    <div class="toast-container" id="toastContainer"></div>
+
+
+    <script>
+        // MOCK DATA STRUCTS (Simulating the structural state of the database)
+        const studentsDb = [
+            { id: 1, name: "Agustina Miranda", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.001", email: "amiranda@bue.edu.ar", parent_email: "tutor_miranda@gmail.com" },
+            { id: 2, name: "Andacaba Madai", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.002", email: "amadai@bue.edu.ar", parent_email: "tutor_madai@gmail.com" },
+            { id: 3, name: "Angulo Brunetti Alejo Nahuel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.003", email: "aangulo@bue.edu.ar", parent_email: "tutor_angulo@gmail.com" },
+            { id: 4, name: "Apicella Nazareno", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.004", email: "napicella@bue.edu.ar", parent_email: "tutor_apicella@gmail.com" },
+            { id: 5, name: "Barreira Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.005", email: "jbarreira@bue.edu.ar", parent_email: "tutor_barreira@gmail.com" },
+            { id: 6, name: "Bartero Lautaro", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.006", email: "lbartero@bue.edu.ar", parent_email: "tutor_bartero@gmail.com" },
+            { id: 7, name: "Belay Piedrabuena Martin", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.007", email: "mbelay@bue.edu.ar", parent_email: "tutor_belay@gmail.com" },
+            { id: 8, name: "Choquehuanca Marco Antonio", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.008", email: "mchoquehuanca@bue.edu.ar", parent_email: "tutor_choquehuanca@gmail.com" },
+            { id: 9, name: "Crespo Santino", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.009", email: "screspo@bue.edu.ar", parent_email: "tutor_crespo@gmail.com" },
+            { id: 10, name: "Dominguez Gamarra Victoria Azul", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.010", email: "vdominguez@bue.edu.ar", parent_email: "tutor_dominguez@gmail.com" },
+            { id: 11, name: "Enrique Diaz Santino Adrian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.011", email: "senrique@bue.edu.ar", parent_email: "tutor_enrique@gmail.com" },
+            { id: 12, name: "Escalante Adrian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.012", email: "aescalante@bue.edu.ar", parent_email: "tutor_escalante@gmail.com" },
+            { id: 13, name: "Espinoza Tiziano", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.013", email: "tespinoza@bue.edu.ar", parent_email: "tutor_espinoza@gmail.com" },
+            { id: 14, name: "Estrada Candiano Jeriel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.014", email: "jestrada@bue.edu.ar", parent_email: "tutor_estrada@gmail.com" },
+            { id: 15, name: "Galíndez Sofía Emma", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.015", email: "sgalindez@bue.edu.ar", parent_email: "tutor_galindez@gmail.com" },
+            { id: 16, name: "Galván Luana", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.016", email: "lgalvan@bue.edu.ar", parent_email: "tutor_galvan@gmail.com" },
+            { id: 17, name: "Goncalves Guerreiro Luna Morena", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.017", email: "lgoncalves@bue.edu.ar", parent_email: "tutor_goncalves@gmail.com" },
+            { id: 18, name: "Guinsburg Mateo", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.018", email: "mguinsburg@bue.edu.ar", parent_email: "tutor_guinsburg@gmail.com" },
+            { id: 19, name: "Hung Nicolás", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.019", email: "nhung@bue.edu.ar", parent_email: "tutor_hung@gmail.com" },
+            { id: 20, name: "Iannopollo Angeline", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.020", email: "aiannopollo@bue.edu.ar", parent_email: "tutor_iannopollo@gmail.com" },
+            { id: 21, name: "Igarzabal Felipe", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.021", email: "figarzabal@bue.edu.ar", parent_email: "tutor_igarzabal@gmail.com" },
+            { id: 22, name: "Manteiga Agustín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.022", email: "amanteiga@bue.edu.ar", parent_email: "tutor_manteiga@gmail.com" },
+            { id: 23, name: "Marquez Cristhian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.023", email: "cmarquez@bue.edu.ar", parent_email: "tutor_marquez@gmail.com" },
+            { id: 24, name: "Mateo Juárez Giliberti", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.024", email: "mjuarez@bue.edu.ar", parent_email: "tutor_juarez@gmail.com" },
+            { id: 25, name: "Mayz Valeria", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.025", email: "vmayz@bue.edu.ar", parent_email: "tutor_mayz@gmail.com" },
+            { id: 26, name: "Mihovilcevic Mirko", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.026", email: "mmihovilcevic@bue.edu.ar", parent_email: "tutor_mihovilcevic@gmail.com" },
+            { id: 27, name: "Miranda Tobías Andres", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.027", email: "tmiranda@bue.edu.ar", parent_email: "tutor_miranda@gmail.com" },
+            { id: 28, name: "Morelli Uziel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.028", email: "umorelli@bue.edu.ar", parent_email: "tutor_morelli@gmail.com" },
+            { id: 29, name: "Muzzi Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.029", email: "jmuzzi@bue.edu.ar", parent_email: "tutor_muzzi@gmail.com" },
+            { id: 30, name: "Navarro Patricio", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.030", email: "pnavarro@bue.edu.ar", parent_email: "tutor_navarro@gmail.com" },
+            { id: 31, name: "Piñero Natanael", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.031", email: "npinero@bue.edu.ar", parent_email: "tutor_pinero@gmail.com" },
+            { id: 32, name: "Portaluppi Santino", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.032", email: "sportaluppi@bue.edu.ar", parent_email: "tutor_portaluppi@gmail.com" },
+            { id: 33, name: "Kohler Ramiro", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.033", email: "rkohler@bue.edu.ar", parent_email: "tutor_kohler@gmail.com" },
+            { id: 34, name: "Rodrigues Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.034", email: "jrodrigues@bue.edu.ar", parent_email: "tutor_rodrigues@gmail.com" },
+            { id: 35, name: "Rodriguez Navarro Juan Alfonso", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.035", email: "jrodriguez@bue.edu.ar", parent_email: "tutor_rodriguez@gmail.com" },
+            { id: 36, name: "Salinas Felipe", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.036", email: "fsalinas@bue.edu.ar", parent_email: "tutor_salinas@gmail.com" },
+            { id: 37, name: "Seiberth Valentin", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.037", email: "vseiberth@bue.edu.ar", parent_email: "tutor_seiberth@gmail.com" },
+            { id: 38, name: "Siñani Matias", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.038", email: "msinani@bue.edu.ar", parent_email: "tutor_sinani@gmail.com" },
+            { id: 39, name: "Valentin Zamira", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.039", email: "zvalentin@bue.edu.ar", parent_email: "tutor_valentin@gmail.com" },
+            { id: 40, name: "Vivacqua Antonella", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.040", email: "avivacqua@bue.edu.ar", parent_email: "tutor_vivacqua@gmail.com" },
+            { id: 41, name: "Yavi Perez Kevin Lucas", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.041", email: "kyavi@bue.edu.ar", parent_email: "tutor_yavi@gmail.com" }
+        ];
+
+
+        let reportsDb = [
+            {
+                id: 101,
+                student_id: 1,
+                description: "El estudiante se retiró del aula del taller de programación sin autorización explícita del docente a cargo, faltando a las normas de seguridad e higiene internas.",
+                issuer_name: "Ing. Carlos Gómez",
+                issuer_role: "Profesor",
+                issue_date: "2026-06-15",
+                issuer_signature: "FIRMADO_DIGITAL_CGOMEZ_BUE",
+                student_text: "Salí un momento al baño pero tardé porque me encontré con un preceptor que me consultó sobre unos papeles del legajo.",
+                pat_notes: "El estudiante no registra antecedentes graves este bimestre. Se dialogó sobre la importancia de avisar.",
+                council_notes: "",
+                additional_notes: "Se conversó de manera coordinada con el equipo PAT.",
+                severity: "LEVE",
+                other_considerations: "Advertencia verbal registrada en sistema.",
+                director_signature: "Mauro - Subregente",
+                director_date: "2026-06-16",
+                notify_student: true,
+                notify_parent: true,
+                status: "Resuelto"
+            },
+            {
+                id: 102,
+                student_id: 2,
+                description: "Se constata altercado verbal subido de tono con otra compañera dentro del buffet institucional durante el horario del recreo central.",
+                issuer_name: "Lucía Martínez",
+                issuer_role: "Preceptor",
+                issue_date: "2026-06-17",
+                issuer_signature: "FIRMADO_DIGITAL_LMARTINEZ_BUE",
+                student_text: "",
+                pat_notes: "",
+                council_notes: "",
+                additional_notes: "",
+                severity: "SUSPENSO",
+                other_considerations: "",
+                director_signature: "No Firmado",
+                director_date: "",
+                notify_student: false,
+                notify_parent: false,
+                status: "Pendiente"
+            }
+        ];
+
+
+        let currentActiveReportId = 101;
+        let currentRole = "Profesor";
+
+
+        // APP INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initFormSelectors();
+            renderReportsQueue();
+            loadReportIntoForm(currentActiveReportId);
+            changeSimulationRole();
+        });
+
+
+        function initFormSelectors() {
+            // Inicializar selectores de Año (1 al 6)
+            const yearSelect = document.getElementById('filter_year');
+            yearSelect.innerHTML = '';
+            for(let i=1; i<=6; i++) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i}° Año`;
+                if(i === 6) opt.selected = true; // Por defecto los datos provistos
+                yearSelect.appendChild(opt);
+            }
+
+
+            // Inicializar selectores de División (1 al 9)
+            const divSelect = document.getElementById('filter_division');
+            divSelect.innerHTML = '';
+            for(let i=1; i<=9; i++) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i}° Div`;
+                if(i === 2) opt.selected = true; // Por defecto los datos provistos
+                divSelect.appendChild(opt);
+            }
+
+
+            updateStudentSelector();
+        }
+
+
+        function updateStudentSelector() {
+            const selectedYear = parseInt(document.getElementById('filter_year').value);
+            const selectedDivision = parseInt(document.getElementById('filter_division').value);
+            const selectedSpecialty = document.getElementById('filter_specialty').value;
+
+
+            const studentSelect = document.getElementById('form_student_id');
+            studentSelect.innerHTML = '';
+
+
+            const filteredStudents = studentsDb.filter(s =>
+                s.year === selectedYear &&
+                s.division === selectedDivision &&
+                s.specialty === selectedSpecialty
+            );
+
+
+            if(filteredStudents.length === 0) {
+                let opt = document.createElement('option');
+                opt.value = "";
+                opt.textContent = "-- No hay alumnos en este curso --";
+                studentSelect.appendChild(opt);
+               
+                document.getElementById('form_student_course').value = "";
+                document.getElementById('form_student_dni').value = "";
+                document.getElementById('form_student_email').value = "";
+            } else {
+                filteredStudents.forEach(st => {
+                    let opt = document.createElement('option');
+                    opt.value = st.id;
+                    opt.textContent = st.name;
+                    studentSelect.appendChild(opt);
+                });
+                syncStudentData();
+            }
+        }
+
+
+        function syncStudentData() {
+            const studentId = document.getElementById('form_student_id').value;
+            if(!studentId) return;
+
+
+            const student = studentsDb.find(s => s.id == studentId);
+            if (student) {
+                document.getElementById('form_student_course').value = student.course;
+                document.getElementById('form_student_dni').value = student.dni;
+                document.getElementById('form_student_email').value = student.email;
+            }
+        }
+
+
+        function filterStudentSearch() {
+            const query = document.getElementById('studentSearchInput').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('studentSearchResults');
+            resultsContainer.innerHTML = '';
+
+
+            if (query.length === 0) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+
+            const queryDigits = query.replace(/\D/g, '');
+
+
+            const matches = studentsDb.filter(s => {
+                const nameMatch = s.name.toLowerCase().includes(query);
+                const dniDigits = s.dni.replace(/\D/g, '');
+                const dniMatch = queryDigits.length > 0 && dniDigits.includes(queryDigits);
+                return nameMatch || dniMatch;
+            });
+
+
+            if (matches.length === 0) {
+                resultsContainer.innerHTML = '<div style="padding: 10px; font-size: 0.85rem; color: var(--text-muted);">No se encontraron alumnos con ese nombre o DNI.</div>';
+                resultsContainer.style.display = 'block';
+                return;
+            }
+
+
+            matches.slice(0, 10).forEach(st => {
+                const item = document.createElement('div');
+                item.className = 'report-item';
+                item.style.marginBottom = '0';
+                item.style.borderRadius = '0';
+                item.style.borderLeft = 'none';
+                item.style.borderRight = 'none';
+                item.style.borderTop = 'none';
+                item.setAttribute('onclick', `selectStudentFromSearch(${st.id})`);
+                item.innerHTML = `
+                    <div style="font-weight: 600;">${st.name}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${st.course} — DNI: ${st.dni}</div>
+                `;
+                resultsContainer.appendChild(item);
+            });
+
+
+            resultsContainer.style.display = 'block';
+        }
+
+
+        function selectStudentFromSearch(studentId) {
+            const student = studentsDb.find(s => s.id === studentId);
+            if (!student) return;
+
+
+            document.getElementById('filter_year').value = student.year;
+            document.getElementById('filter_division').value = student.division;
+            document.getElementById('filter_specialty').value = student.specialty;
+            updateStudentSelector();
+            document.getElementById('form_student_id').value = student.id;
+            syncStudentData();
+
+
+            document.getElementById('studentSearchInput').value = '';
+            document.getElementById('studentSearchResults').innerHTML = '';
+            document.getElementById('studentSearchResults').style.display = 'none';
+
+
+            pushLog(`[BÚSQUEDA] Alumno "${student.name}" localizado y seleccionado vía buscador rápido (sin recorrer curso por curso).`);
+        }
+
+
+        function renderReportsQueue() {
+            const queueElement = document.getElementById('reportsQueue');
+            queueElement.innerHTML = '';
+
+
+            reportsDb.forEach(rep => {
+                const student = studentsDb.find(s => s.id === rep.student_id);
+                const li = document.createElement('li');
+                li.className = `report-item ${rep.id === currentActiveReportId ? 'active' : ''}`;
+                li.setAttribute('onclick', `selectReport(${rep.id})`);
+
+
+                let severityBadge = `<span class="badge badge-suspenso">ADVERTENCIA (SUSPENSO)</span>`;
+                if (rep.severity === "LEVE") severityBadge = `<span class="badge badge-leve">1° INSTANCIA - LEVE</span>`;
+                if (rep.severity === "GRAVE") severityBadge = `<span class="badge badge-grave">2° INSTANCIA - GRAVE</span>`;
+                if (rep.severity === "MUY GRAVE") severityBadge = `<span class="badge badge-muygrave">3° INSTANCIA - MUY GRAVE</span>`;
+
+
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+                        <span>ID: #${rep.id}</span>
+                        <span>${rep.issue_date}</span>
+                    </div>
+                    <div style="font-weight: bold; margin-top: 3px;">${student ? student.name : 'Alumno Desconocido'}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin-top: 2px;">
+                        ${rep.description}
+                    </div>
+                    <div>${severityBadge}</div>
+                `;
+                queueElement.appendChild(li);
+            });
+        }
+
+
+        function selectReport(id) {
+            currentActiveReportId = id;
+            renderReportsQueue();
+            loadReportIntoForm(id);
+            pushLog(`[SISTEMA] Cambiando visualización al informe ID #${id}.`);
+        }
+
+
+        function loadReportIntoForm(id) {
+            const rep = reportsDb.find(r => r.id === id);
+            if (!rep) return;
+
+
+            const student = studentsDb.find(s => s.id === rep.student_id);
+            if(student) {
+                document.getElementById('filter_year').value = student.year;
+                document.getElementById('filter_division').value = student.division;
+                document.getElementById('filter_specialty').value = student.specialty;
+                updateStudentSelector();
+                document.getElementById('form_student_id').value = rep.student_id;
+            }
+
+
+            document.getElementById('form_description').value = rep.description;
+            document.getElementById('form_issuer_name').value = rep.issuer_name;
+            document.getElementById('form_issuer_role').value = rep.issuer_role;
+            document.getElementById('form_issue_date').value = rep.issue_date;
+            document.getElementById('form_issuer_signature').value = rep.issuer_signature || "Pendiente de firma";
+            document.getElementById('form_student_text').value = rep.student_text;
+            document.getElementById('form_pat_notes').value = rep.pat_notes;
+            document.getElementById('form_council_notes').value = rep.council_notes;
+            document.getElementById('form_additional_notes').value = rep.additional_notes;
+           
+            // Radio buttons severity
+            document.getElementById('rad_leve').checked = (rep.severity === "LEVE");
+            document.getElementById('rad_grave').checked = (rep.severity === "GRAVE");
+            document.getElementById('rad_muygrave').checked = (rep.severity === "MUY GRAVE");
+            document.getElementById('rad_suspenso').checked = (rep.severity === "SUSPENSO");
+
+
+            document.getElementById('form_other_considerations').value = rep.other_considerations;
+            document.getElementById('form_director_signature').value = rep.director_signature || "No Firmado";
+            document.getElementById('form_director_date').value = rep.director_date;
+
+
+            document.getElementById('chk_notify_student').checked = rep.notify_student;
+            document.getElementById('chk_notify_parent').checked = rep.notify_parent;
+
+
+            syncStudentData();
+            updateWorkflowGraphics(rep);
+        }
+
+
+        function updateWorkflowGraphics(rep) {
+            // Reset states
+            for(let i=1; i<=5; i++) {
+                document.getElementById(`ws-${i}`).className = "workflow-step";
+            }
+
+
+            document.getElementById('ws-1').className = "workflow-step completed";
+           
+            if (rep.student_text.trim().length > 0) {
+                document.getElementById('ws-2').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-2').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.pat_notes.trim().length > 0 || rep.council_notes.trim().length > 0) {
+                document.getElementById('ws-3').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-3').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.director_signature && rep.director_signature !== "No Firmado") {
+                document.getElementById('ws-4').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-4').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.notify_student && rep.notify_parent) {
+                document.getElementById('ws-5').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-5').className = "workflow-step current";
+            }
+        }
+
+
+        function changeSimulationRole() {
+            currentRole = document.getElementById('roleSelector').value;
+            const hint = document.getElementById('rolePermissionsHint');
+           
+            // Form inputs mapping
+            const allInputs = document.getElementById('convivenciaForm').querySelectorAll('input, select, textarea');
+            allInputs.forEach(el => el.removeAttribute('disabled'));
+
+
+            // Re-disable hardcoded layouts
+            document.getElementById('form_student_course').setAttribute('disabled', 'true');
+            document.getElementById('form_student_dni').setAttribute('disabled', 'true');
+            document.getElementById('form_student_email').setAttribute('disabled', 'true');
+            document.getElementById('form_issuer_signature').setAttribute('disabled', 'true');
+            document.getElementById('form_director_signature').setAttribute('disabled', 'true');
+
+
+            if (currentRole === "Profesor") {
+                hint.textContent = "Permisos: Puede crear y editar campos de origen (1, 2, 3) y observaciones.";
+                disableFormSections(['block_student_statement', 'block_councils', 'block_dictum', 'block_notifications']);
+                document.getElementById('filter_year').removeAttribute('disabled');
+                document.getElementById('filter_division').removeAttribute('disabled');
+                document.getElementById('filter_specialty').removeAttribute('disabled');
+                document.getElementById('form_student_id').removeAttribute('disabled');
+            }
+            else if (currentRole === "Alumno") {
+                hint.textContent = "Permisos: Ley de CABA de derecho a ser escuchado. Solo edita su descargo (4).";
+                disableFormSections(['all_except_statement']);
+                document.getElementById('form_student_text').removeAttribute('disabled');
+            }
+            else if (currentRole === "Regente") {
+                hint.textContent = "Permisos totales de gestión directiva. Modifica dictámenes, consejos y firmas.";
+                // Regente has access to override everything
+            }
+            else if (currentRole === "Tutor") {
+                hint.textContent = "Permisos: Acceso familiar de conformidad. Solo altera check de notificación (8).";
+                disableFormSections(['all_except_notifications']);
+                document.getElementById('chk_notify_parent').removeAttribute('disabled');
+            }
+            else if (currentRole === "PAT") {
+                hint.textContent = "Permisos: Consulta pedagógica y adición de notas en sección de consejos (5).";
+                disableFormSections(['all_except_pat']);
+                document.getElementById('form_pat_notes').removeAttribute('disabled');
+            }
+            else if (currentRole === "Secretaria") {
+                hint.textContent = "Permisos: Auditoría estricta del documento. Solo lectura completa.";
+                allInputs.forEach(el => el.setAttribute('disabled', 'true'));
+            }
+
+
+            pushLog(`[PERMISOS] Rol simulado cambiado a: ${currentRole}. Interfaz recalculada.`);
+        }
+
+
+        function disableFormSections(criteria) {
+            const form = document.getElementById('convivenciaForm');
+           
+            if(criteria.includes('block_student_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('form_student_text').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_councils') || criteria.includes('all_except_statement') || criteria.includes('all_except_notifications')) {
+                document.getElementById('form_pat_notes').setAttribute('disabled', 'true');
+                document.getElementById('form_council_notes').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_dictum') || criteria.includes('all_except_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('rad_leve').setAttribute('disabled', 'true');
+                document.getElementById('rad_grave').setAttribute('disabled', 'true');
+                document.getElementById('rad_muygrave').setAttribute('disabled', 'true');
+                document.getElementById('rad_suspenso').setAttribute('disabled', 'true');
+                document.getElementById('form_other_considerations').setAttribute('disabled', 'true');
+                document.getElementById('form_director_date').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_notifications') || criteria.includes('all_except_statement') || criteria.includes('all_except_pat')) {
+                document.getElementById('chk_notify_student').setAttribute('disabled', 'true');
+                document.getElementById('chk_notify_parent').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('all_except_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('filter_year').setAttribute('disabled', 'true');
+                document.getElementById('filter_division').setAttribute('disabled', 'true');
+                document.getElementById('filter_specialty').setAttribute('disabled', 'true');
+                document.getElementById('form_student_id').setAttribute('disabled', 'true');
+                document.getElementById('form_description').setAttribute('disabled', 'true');
+                document.getElementById('form_issuer_name').setAttribute('disabled', 'true');
+                document.getElementById('form_issuer_role').setAttribute('disabled', 'true');
+                document.getElementById('form_issue_date').setAttribute('disabled', 'true');
+                document.getElementById('form_additional_notes').setAttribute('disabled', 'true');
+            }
+        }
+
+
+        function createNewBlankReport() {
+            currentActiveReportId = Date.now() % 1000; // Fake structural ID
+           
+            // Establecer filtros por defecto para asegurar la visualización de los datos cargados
+            document.getElementById('filter_year').value = 6;
+            document.getElementById('filter_division').value = 2;
+            document.getElementById('filter_specialty').value = "Computación";
+            updateStudentSelector();
+
+
+            const newRep = {
+                id: currentActiveReportId,
+                student_id: 1,
+                description: "",
+                issuer_name: "",
+                issuer_role: "Profesor",
+                issue_date: new Date().toISOString().split('T')[0],
+                issuer_signature: "Pendiente de guardado",
+                student_text: "",
+                pat_notes: "",
+                council_notes: "",
+                additional_notes: "",
+                severity: "SUSPENSO",
+                other_considerations: "",
+                director_signature: "No Firmado",
+                director_date: "",
+                notify_student: false,
+                notify_parent: false,
+                status: "Pendiente"
+            };
+
+
+            reportsDb.unshift(newRep); // Añadir arriba
+            selectReport(currentActiveReportId);
+            showToast("Nuevo formulario vacío instanciado en el cliente.");
+        }
+
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+           
+            let rep = reportsDb.find(r => r.id === currentActiveReportId);
+            if(!rep) return;
+
+
+            // Extraer datos según rol para simular persistencia parcial
+            if(currentRole === "Profesor" || currentRole === "Regente") {
+                rep.student_id = parseInt(document.getElementById('form_student_id').value);
+                rep.description = document.getElementById('form_description').value;
+                rep.issuer_name = document.getElementById('form_issuer_name').value;
+                rep.issuer_role = document.getElementById('form_issuer_role').value;
+                rep.issue_date = document.getElementById('form_issue_date').value;
+                rep.issuer_signature = "FIRMADO_DIGITAL_" + rep.issuer_name.replace(/\s+/g, '').toUpperCase() + "_BUE";
+                rep.additional_notes = document.getElementById('form_additional_notes').value;
+            }
+
+
+            if(currentRole === "Alumno" || currentRole === "Regente") {
+                rep.student_text = document.getElementById('form_student_text').value;
+                if(currentRole === "Alumno" && rep.student_text.trim().length > 0) {
+                    pushLog(`[NOTIFICACIÓN] El alumno disparó alerta automática por correo al equipo PAT tras guardar su descargo.`);
+                }
+            }
+
+
+            if(currentRole === "PAT" || currentRole === "Regente") {
+                rep.pat_notes = document.getElementById('form_pat_notes').value;
+            }
+
+
+            if(currentRole === "Regente") {
+                rep.council_notes = document.getElementById('form_council_notes').value;
+               
+                if(document.getElementById('rad_leve').checked) rep.severity = "LEVE";
+                else if(document.getElementById('rad_grave').checked) rep.severity = "GRAVE";
+                else if(document.getElementById('rad_muygrave').checked) rep.severity = "MUY GRAVE";
+                else rep.severity = "SUSPENSO";
+
+
+                rep.other_considerations = document.getElementById('form_other_considerations').value;
+                rep.director_date = document.getElementById('form_director_date').value;
+               
+                if(rep.director_date) {
+                    rep.director_signature = "FIRMADO_AUTORIDAD_REGENTE_BUE";
+                }
+            }
+
+
+            if(currentRole === "Tutor" || currentRole === "Regente") {
+                rep.notify_parent = document.getElementById('chk_notify_parent').checked;
+            }
+            if(currentRole === "Regente") {
+                rep.notify_student = document.getElementById('chk_notify_student').checked;
+            }
+
+
+            // Re-renderizar y actualizar interfaz
+            renderReportsQueue();
+            loadReportIntoForm(currentActiveReportId);
+            showToast("Cambios guardados con éxito en la simulación.");
+
+
+            // Triggers de negocio (Simulación de correos/tickets)
+            pushLog(`[SQL BACKEND] UPDATE informes SET data = JSON... WHERE id = ${rep.id} -- OK`);
+            if(currentRole === "Profesor") {
+                pushLog(`[PROCESO AUTOMÁTICO] Ticket instanciado. Despachando correos electrónicos a Familia (${studentsDb.find(s=>s.id===rep.student_id).parent_email}) y Alumno.`);
+            }
+        }
+
+
+        function resetFormToActive() {
+            loadReportIntoForm(currentActiveReportId);
+            showToast("Campos revertidos a su estado guardado.");
+        }
+
+
+        function pushLog(text) {
+            const logs = document.getElementById('backendLogs');
+            logs.textContent += "\n" + text;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>ℹ️</span> <span>${message}</span>`;
+            container.appendChild(toast);
+           
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Informes de Convivencia - Escuela Tecnica Ingeniero Eduardo Latzina</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --primary-dark: #172554;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --radius: 8px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+
+
+        .header-title h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+
+        .header-title p {
+            font-size: 0.85rem;
+            color: #93c5fd;
+        }
+
+
+        .simulator-badge {
+            background-color: var(--accent);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+
+        .role-selector-bar {
+            background-color: #e2e8f0;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .role-selector-bar select {
+            padding: 5px 12px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-weight: 600;
+            background-color: white;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+
+        .container {
+            max-width: 1200px;
+            margin: 25px auto;
+            padding: 0 20px;
+        }
+
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+
+        @media (max-width: 900px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid #e2e8f0;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+
+        .card-title {
+            font-size: 1.1rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        /* Lists and Queue items */
+        .report-list {
+            list-style: none;
+        }
+
+
+        .report-item {
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+
+        .report-item:hover {
+            border-color: var(--primary-light);
+            background-color: #f0fdf4;
+        }
+
+
+        .report-item.active {
+            border-left: 5px solid var(--primary);
+            background-color: #eff6ff;
+            font-weight: 500;
+        }
+
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+
+        .badge-leve { background-color: #fef3c7; color: #d97706; }
+        .badge-grave { background-color: #fee2e2; color: #dc2626; }
+        .badge-muygrave { background-color: #fca5a5; color: #7f1d1d; }
+        .badge-suspenso { background-color: #f1f5f9; color: #475569; }
+
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+
+        input[type="text"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            background-color: #fff;
+            color: var(--text-dark);
+            transition: border-color 0.2s;
+        }
+
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+
+        input[disabled], select[disabled], textarea[disabled] {
+            background-color: #f1f5f9;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #334155;
+        }
+
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+
+        /* Workflow steps and visual hierarchy */
+        .section-block {
+            background: #fafafa;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+
+        .section-block h3 {
+            font-size: 1rem;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .workflow-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            background: #edd;
+            border-radius: 30px;
+            overflow: hidden;
+            background-color: #e2e8f0;
+        }
+
+
+        .workflow-step {
+            flex: 1;
+            text-align: center;
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+
+        .workflow-step.completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+
+        .workflow-step.current {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+
+        /* Toast Alert System */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+
+        .toast {
+            background-color: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+
+        @keyframes slideIn {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+
+        /* Info boxes */
+        .info-tag-container {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary-light);
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+            color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+
+
+    <header>
+        <div class="header-title">
+            <h1>Sistema de Convivencia Escolar</h1>
+            <p>Escuela Tecnica N-35 Ingeniero Eduardo Latzina</p>
+        </div>
+        <div>
+            <span class="simulator-badge">PROTOTIPO FUNCIONAL V1.0</span>
+        </div>
+    </header>
+
+
+    <div class="role-selector-bar">
+        <span><strong>Simular Vista de Usuario:</strong></span>
+        <select id="roleSelector" onchange="changeSimulationRole()">
+            <option value="Profesor">Profesor (Carga y Visualización)</option>
+            <option value="Alumno">Alumno (Carga su Descargo)</option>
+            <option value="Regente">Regente / Directivo (Dictamina Falta, Firma y Cierre)</option>
+            <option value="Tutor">Padre/Madre/Tutor (Notificación)</option>
+            <option value="PAT">Profesor Acompañante Trayectoria - PAT (Consulta y Notas)</option>
+            <option value="Secretaria">Secretaría (Solo Lectura Completa)</option>
+        </select>
+        <span id="rolePermissionsHint" style="font-style: italic; color: #475569;"></span>
+    </div>
+
+
+    <div class="container grid-layout">
+       
+        <!-- SIDEBAR: Lista de Informes Activos e Historial -->
+        <aside>
+            <div class="card" style="position: sticky; top: 20px;">
+                <div class="card-title">
+                    <span>Informes Activos</span>
+                    <button class="btn btn-primary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="createNewBlankReport()">+ Nuevo</button>
+                </div>
+                <div class="info-tag-container">
+                    Haga clic en un informe para cargar su estado actual en el formulario principal.
+                </div>
+                <ul class="report-list" id="reportsQueue">
+                    <!-- Dynamic Loading -->
+                </ul>
+            </div>
+        </aside>
+
+
+        <!-- MAIN INTERFACE: Formulario Unificado Digital del Ministerio -->
+        <main>
+            <div class="card">
+                <div class="workflow-indicator" id="workflowProgress">
+                    <div class="workflow-step completed" id="ws-1">1. Creación</div>
+                    <div class="workflow-step" id="ws-2">2. Descargo</div>
+                    <div class="workflow-step" id="ws-3">3. Consejos</div>
+                    <div class="workflow-step" id="ws-4">4. Dictamen</div>
+                    <div class="workflow-step" id="ws-5">5. Notificado</div>
+                </div>
+
+
+                <form id="convivenciaForm" onsubmit="handleFormSubmit(event)">
+                   
+                    <!-- SECCIÓN 1: Encabezado e Identificación del Alumno -->
+                    <div class="section-block">
+                        <h3>1. Encabezado e Identificación del Alumno</h3>
+                        <div class="form-group" style="position: relative;">
+                            <label>Buscar Alumno por Nombre o DNI</label>
+                            <input type="text" id="studentSearchInput" placeholder="Escriba nombre o DNI para localizar al alumno sin elegir curso por curso..." oninput="filterStudentSearch()" autocomplete="off" />
+                            <div id="studentSearchResults" style="display: none; position: absolute; z-index: 10; left: 0; right: 0; background-color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow);"></div>
+                        </div>
+                        <div class="form-row" style="grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Año</label>
+                                <select id="filter_year" onchange="updateStudentSelector()">
+                                    <!-- Generado de 1 a 6 -->
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>División</label>
+                                <select id="filter_division" onchange="updateStudentSelector()">
+                                    <!-- Generado de 1 a 9 -->
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Especialidad</label>
+                                <select id="filter_specialty" onchange="updateStudentSelector()">
+                                    <option value="Computación">Computación</option>
+                                    <option value="Automotor">Automotor</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Estudiante *</label>
+                                <select id="form_student_id" required onchange="syncStudentData()">
+                                    <!-- Se filtra dinámicamente -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Jurisdicción / Institución</label>
+                                <input type="text" value="Ministerio de Educación CABA - Escuela Técnica Secundaria" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label>Año y División Confirmado</label>
+                                <input type="text" id="form_student_course" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>DNI / Legajo</label>
+                                <input type="text" id="form_student_dni" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                            <div class="form-group">
+                                <label>Email Institucional Alumno</label>
+                                <input type="text" id="form_student_email" readonly style="background-color: #f1f5f9;" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 2: Descripción del Hecho -->
+                    <div class="section-block">
+                        <h3>2. Descripción del Hecho (Transgresión)</h3>
+                        <div class="form-group">
+                            <label>Detalle de la acción (Conducta observada contraria al Reglamento de Convivencia) *</label>
+                            <textarea id="form_description" rows="4" required placeholder="Describa de manera clara, objetiva y detallada lo ocurrido con fecha y lugar de la transgresión..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 3: Solicitud de Sanción (Origen) -->
+                    <div class="section-block">
+                        <h3>3. Origen y Emisor de la Solicitud</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Docente / Emisor *</label>
+                                <input type="text" id="form_issuer_name" required placeholder="Nombre completo del emisor" />
+                            </div>
+                            <div class="form-group">
+                                <label>Cargo / Función *</label>
+                                <select id="form_issuer_role" required>
+                                    <option value="Profesor">Profesor de Asignatura</option>
+                                    <option value="Preceptor">Preceptor de Curso</option>
+                                    <option value="Tutor">Tutor / Coordinador</option>
+                                    <option value="Regente">Regente Técnico/De Cultura</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Fecha de Emisión *</label>
+                                <input type="date" id="form_issue_date" required />
+                            </div>
+                            <div class="form-group">
+                                <label>Firma Digital Emisor</label>
+                                <input type="text" id="form_issuer_signature" readonly value="Pendiente de guardado" style="font-style: italic; background-color: #f1f5f9; color: #475569;" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 4: Descargo del Alumno/a -->
+                    <div class="section-block" id="block_student_statement">
+                        <h3>4. Descargo del Alumno/a (Garantía de Derecho a ser Escuchado)</h3>
+                        <div class="info-tag-container" style="background-color: #fffbeb; border-color: var(--accent); color: #92400e;">
+                            Esta sección es de uso exclusivo para el estudiante implicado o su representante directo durante el proceso.
+                        </div>
+                        <div class="form-group">
+                            <label>Testimonio y Versión del Alumno/a</label>
+                            <textarea id="form_student_text" rows="3" placeholder="El estudiante puede redactar de puño y letra digital su versión de los acontecimientos..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 5: Informes de Consejos Colegiados (Uso Específico) -->
+                    <div class="section-block" id="block_councils">
+                        <h3>5. Informes de Consejos Colegiados e Intervención PAT</h3>
+                        <div class="form-group">
+                            <label>Informe del Consejo de Aula / Observaciones del PAT (Profesor Acompañante de Trayectoria)</label>
+                            <textarea id="form_pat_notes" rows="2" placeholder="Anotaciones de acompañamiento escolar o evolución del curso..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Informe del Consejo de Convivencia Institucional</label>
+                            <textarea id="form_council_notes" rows="2" placeholder="Resolución o análisis del cuerpo general colegiado de convivencia..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 6: Observaciones Adicionales -->
+                    <div class="section-block">
+                        <h3>6. Observaciones Adicionales</h3>
+                        <div class="form-group">
+                            <label>Notas de Autoridades o Aclaraciones Generales</label>
+                            <textarea id="form_additional_notes" rows="2" placeholder="Espacio libre para añadir aclaraciones de las partes intervinientes o DOE..."></textarea>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 7: Clasificación y Dictamen de la Falta -->
+                    <div class="section-block" id="block_dictum">
+                        <h3>7. Clasificación y Dictamen Final de la Falta (Uso Exclusivo Directivo)</h3>
+                        <div class="form-group">
+                            <label>Gravedad de la Instancia Dictaminada</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="LEVE" id="rad_leve"> 1º Instancia: LEVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="GRAVE" id="rad_grave"> 2º Instancia: GRAVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="MUY GRAVE" id="rad_muygrave"> 3º Instancia: MUY GRAVE
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="severity" value="SUSPENSO" id="rad_suspenso"> Dejar en Advertencia (Suspenso)
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Otra Consideración o Medida Pedagógica Adoptada</label>
+                            <input type="text" id="form_other_considerations" placeholder="Ej. Citación a firma presencial, tareas comunitarias en taller, etc." />
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Firma Autoridad (Regente/Rector)</label>
+                                <input type="text" id="form_director_signature" readonly style="font-weight: bold; background-color: #f1f5f9;" value="No Firmado" />
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha Dictamen Final</label>
+                                <input type="date" id="form_director_date" />
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- SECCIÓN 8: Módulo de Notificaciones y Conformidad -->
+                    <div class="section-block" id="block_notifications">
+                        <h3>8. Módulo de Notificaciones Automáticas</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-option">
+                                <input type="checkbox" id="chk_notify_student"> Notificación Electrónica Alumno (Acusa Recibo)
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" id="chk_notify_parent"> Notificación Confirmada Padre/Madre/Tutor
+                            </label>
+                        </div>
+                    </div>
+
+
+                    <!-- ACCIONES DEL FORMULARIO -->
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="resetFormToActive()">Restablecer Campos</button>
+                        <button type="submit" class="btn btn-success" id="submitBtn">Guardar Modificaciones / Registrar Acciones</button>
+                    </div>
+
+
+                </form>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- Container for instant feedback logs (simulating real backend tracking) -->
+    <div class="container">
+        <div class="card" style="background-color: #1e293b; color: #f8fafc;">
+            <div class="card-title" style="color: #38bdf8; border-color: #334155;">Consola de Simulación de Procesos de Negocio (Backend Logs)</div>
+            <pre id="backendLogs" style="font-family: monospace; font-size: 0.85rem; overflow-x: auto; white-space: pre-wrap; max-height: 150px;">[INFO] Inicializando base de datos local simulada en memoria... OK
+[INFO] Cargados diccionarios maestros: Profesores (60), Preceptores (10), Regentes (7), Alumnos (450).
+[SISTEMA] Listo para operar bajo el Plan CABA Secundaria Aprende.</pre>
+        </div>
+    </div>
+
+
+    <div class="toast-container" id="toastContainer"></div>
+
+
+    <script>
+        // MOCK DATA STRUCTS (Simulating the structural state of the database)
+        const studentsDb = [
+            { id: 1, name: "Agustina Miranda", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.001", email: "amiranda@bue.edu.ar", parent_email: "tutor_miranda@gmail.com" },
+            { id: 2, name: "Andacaba Madai", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.002", email: "amadai@bue.edu.ar", parent_email: "tutor_madai@gmail.com" },
+            { id: 3, name: "Angulo Brunetti Alejo Nahuel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.003", email: "aangulo@bue.edu.ar", parent_email: "tutor_angulo@gmail.com" },
+            { id: 4, name: "Apicella Nazareno", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.004", email: "napicella@bue.edu.ar", parent_email: "tutor_apicella@gmail.com" },
+            { id: 5, name: "Barreira Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.005", email: "jbarreira@bue.edu.ar", parent_email: "tutor_barreira@gmail.com" },
+            { id: 6, name: "Bartero Lautaro", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.006", email: "lbartero@bue.edu.ar", parent_email: "tutor_bartero@gmail.com" },
+            { id: 7, name: "Belay Piedrabuena Martin", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.007", email: "mbelay@bue.edu.ar", parent_email: "tutor_belay@gmail.com" },
+            { id: 8, name: "Choquehuanca Marco Antonio", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.008", email: "mchoquehuanca@bue.edu.ar", parent_email: "tutor_choquehuanca@gmail.com" },
+            { id: 9, name: "Crespo Santino", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.009", email: "screspo@bue.edu.ar", parent_email: "tutor_crespo@gmail.com" },
+            { id: 10, name: "Dominguez Gamarra Victoria Azul", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.010", email: "vdominguez@bue.edu.ar", parent_email: "tutor_dominguez@gmail.com" },
+            { id: 11, name: "Enrique Diaz Santino Adrian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.011", email: "senrique@bue.edu.ar", parent_email: "tutor_enrique@gmail.com" },
+            { id: 12, name: "Escalante Adrian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.012", email: "aescalante@bue.edu.ar", parent_email: "tutor_escalante@gmail.com" },
+            { id: 13, name: "Espinoza Tiziano", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.013", email: "tespinoza@bue.edu.ar", parent_email: "tutor_espinoza@gmail.com" },
+            { id: 14, name: "Estrada Candiano Jeriel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.014", email: "jestrada@bue.edu.ar", parent_email: "tutor_estrada@gmail.com" },
+            { id: 15, name: "Galíndez Sofía Emma", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.015", email: "sgalindez@bue.edu.ar", parent_email: "tutor_galindez@gmail.com" },
+            { id: 16, name: "Galván Luana", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.016", email: "lgalvan@bue.edu.ar", parent_email: "tutor_galvan@gmail.com" },
+            { id: 17, name: "Goncalves Guerreiro Luna Morena", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.017", email: "lgoncalves@bue.edu.ar", parent_email: "tutor_goncalves@gmail.com" },
+            { id: 18, name: "Guinsburg Mateo", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.018", email: "mguinsburg@bue.edu.ar", parent_email: "tutor_guinsburg@gmail.com" },
+            { id: 19, name: "Hung Nicolás", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.019", email: "nhung@bue.edu.ar", parent_email: "tutor_hung@gmail.com" },
+            { id: 20, name: "Iannopollo Angeline", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.020", email: "aiannopollo@bue.edu.ar", parent_email: "tutor_iannopollo@gmail.com" },
+            { id: 21, name: "Igarzabal Felipe", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.021", email: "figarzabal@bue.edu.ar", parent_email: "tutor_igarzabal@gmail.com" },
+            { id: 22, name: "Manteiga Agustín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.022", email: "amanteiga@bue.edu.ar", parent_email: "tutor_manteiga@gmail.com" },
+            { id: 23, name: "Marquez Cristhian", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.023", email: "cmarquez@bue.edu.ar", parent_email: "tutor_marquez@gmail.com" },
+            { id: 24, name: "Mateo Juárez Giliberti", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.024", email: "mjuarez@bue.edu.ar", parent_email: "tutor_juarez@gmail.com" },
+            { id: 25, name: "Mayz Valeria", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.025", email: "vmayz@bue.edu.ar", parent_email: "tutor_mayz@gmail.com" },
+            { id: 26, name: "Mihovilcevic Mirko", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.026", email: "mmihovilcevic@bue.edu.ar", parent_email: "tutor_mihovilcevic@gmail.com" },
+            { id: 27, name: "Miranda Tobías Andres", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.027", email: "tmiranda@bue.edu.ar", parent_email: "tutor_miranda@gmail.com" },
+            { id: 28, name: "Morelli Uziel", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.028", email: "umorelli@bue.edu.ar", parent_email: "tutor_morelli@gmail.com" },
+            { id: 29, name: "Muzzi Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.029", email: "jmuzzi@bue.edu.ar", parent_email: "tutor_muzzi@gmail.com" },
+            { id: 30, name: "Navarro Patricio", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.030", email: "pnavarro@bue.edu.ar", parent_email: "tutor_navarro@gmail.com" },
+            { id: 31, name: "Piñero Natanael", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.031", email: "npinero@bue.edu.ar", parent_email: "tutor_pinero@gmail.com" },
+            { id: 32, name: "Portaluppi Santino", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.032", email: "sportaluppi@bue.edu.ar", parent_email: "tutor_portaluppi@gmail.com" },
+            { id: 33, name: "Kohler Ramiro", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.033", email: "rkohler@bue.edu.ar", parent_email: "tutor_kohler@gmail.com" },
+            { id: 34, name: "Rodrigues Joaquín", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.034", email: "jrodrigues@bue.edu.ar", parent_email: "tutor_rodrigues@gmail.com" },
+            { id: 35, name: "Rodriguez Navarro Juan Alfonso", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.035", email: "jrodriguez@bue.edu.ar", parent_email: "tutor_rodriguez@gmail.com" },
+            { id: 36, name: "Salinas Felipe", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.036", email: "fsalinas@bue.edu.ar", parent_email: "tutor_salinas@gmail.com" },
+            { id: 37, name: "Seiberth Valentin", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.037", email: "vseiberth@bue.edu.ar", parent_email: "tutor_seiberth@gmail.com" },
+            { id: 38, name: "Siñani Matias", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.038", email: "msinani@bue.edu.ar", parent_email: "tutor_sinani@gmail.com" },
+            { id: 39, name: "Valentin Zamira", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.039", email: "zvalentin@bue.edu.ar", parent_email: "tutor_valentin@gmail.com" },
+            { id: 40, name: "Vivacqua Antonella", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.040", email: "avivacqua@bue.edu.ar", parent_email: "tutor_vivacqua@gmail.com" },
+            { id: 41, name: "Yavi Perez Kevin Lucas", year: 6, division: 2, specialty: "Computación", course: "6° 2° Computación", dni: "46.234.041", email: "kyavi@bue.edu.ar", parent_email: "tutor_yavi@gmail.com" }
+        ];
+
+
+        let reportsDb = [
+            {
+                id: 101,
+                student_id: 1,
+                description: "El estudiante se retiró del aula del taller de programación sin autorización explícita del docente a cargo, faltando a las normas de seguridad e higiene internas.",
+                issuer_name: "Ing. Carlos Gómez",
+                issuer_role: "Profesor",
+                issue_date: "2026-06-15",
+                issuer_signature: "FIRMADO_DIGITAL_CGOMEZ_BUE",
+                student_text: "Salí un momento al baño pero tardé porque me encontré con un preceptor que me consultó sobre unos papeles del legajo.",
+                pat_notes: "El estudiante no registra antecedentes graves este bimestre. Se dialogó sobre la importancia de avisar.",
+                council_notes: "",
+                additional_notes: "Se conversó de manera coordinada con el equipo PAT.",
+                severity: "LEVE",
+                other_considerations: "Advertencia verbal registrada en sistema.",
+                director_signature: "Mauro - Subregente",
+                director_date: "2026-06-16",
+                notify_student: true,
+                notify_parent: true,
+                status: "Resuelto"
+            },
+            {
+                id: 102,
+                student_id: 2,
+                description: "Se constata altercado verbal subido de tono con otra compañera dentro del buffet institucional durante el horario del recreo central.",
+                issuer_name: "Lucía Martínez",
+                issuer_role: "Preceptor",
+                issue_date: "2026-06-17",
+                issuer_signature: "FIRMADO_DIGITAL_LMARTINEZ_BUE",
+                student_text: "",
+                pat_notes: "",
+                council_notes: "",
+                additional_notes: "",
+                severity: "SUSPENSO",
+                other_considerations: "",
+                director_signature: "No Firmado",
+                director_date: "",
+                notify_student: false,
+                notify_parent: false,
+                status: "Pendiente"
+            }
+        ];
+
+
+        let currentActiveReportId = 101;
+        let currentRole = "Profesor";
+
+
+        // APP INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            initFormSelectors();
+            renderReportsQueue();
+            loadReportIntoForm(currentActiveReportId);
+            changeSimulationRole();
+        });
+
+
+        function initFormSelectors() {
+            // Inicializar selectores de Año (1 al 6)
+            const yearSelect = document.getElementById('filter_year');
+            yearSelect.innerHTML = '';
+            for(let i=1; i<=6; i++) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i}° Año`;
+                if(i === 6) opt.selected = true; // Por defecto los datos provistos
+                yearSelect.appendChild(opt);
+            }
+
+
+            // Inicializar selectores de División (1 al 9)
+            const divSelect = document.getElementById('filter_division');
+            divSelect.innerHTML = '';
+            for(let i=1; i<=9; i++) {
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i}° Div`;
+                if(i === 2) opt.selected = true; // Por defecto los datos provistos
+                divSelect.appendChild(opt);
+            }
+
+
+            updateStudentSelector();
+        }
+
+
+        function updateStudentSelector() {
+            const selectedYear = parseInt(document.getElementById('filter_year').value);
+            const selectedDivision = parseInt(document.getElementById('filter_division').value);
+            const selectedSpecialty = document.getElementById('filter_specialty').value;
+
+
+            const studentSelect = document.getElementById('form_student_id');
+            studentSelect.innerHTML = '';
+
+
+            const filteredStudents = studentsDb.filter(s =>
+                s.year === selectedYear &&
+                s.division === selectedDivision &&
+                s.specialty === selectedSpecialty
+            );
+
+
+            if(filteredStudents.length === 0) {
+                let opt = document.createElement('option');
+                opt.value = "";
+                opt.textContent = "-- No hay alumnos en este curso --";
+                studentSelect.appendChild(opt);
+               
+                document.getElementById('form_student_course').value = "";
+                document.getElementById('form_student_dni').value = "";
+                document.getElementById('form_student_email').value = "";
+            } else {
+                filteredStudents.forEach(st => {
+                    let opt = document.createElement('option');
+                    opt.value = st.id;
+                    opt.textContent = st.name;
+                    studentSelect.appendChild(opt);
+                });
+                syncStudentData();
+            }
+        }
+
+
+        function syncStudentData() {
+            const studentId = document.getElementById('form_student_id').value;
+            if(!studentId) return;
+
+
+            const student = studentsDb.find(s => s.id == studentId);
+            if (student) {
+                document.getElementById('form_student_course').value = student.course;
+                document.getElementById('form_student_dni').value = student.dni;
+                document.getElementById('form_student_email').value = student.email;
+            }
+        }
+
+
+        function filterStudentSearch() {
+            const query = document.getElementById('studentSearchInput').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('studentSearchResults');
+            resultsContainer.innerHTML = '';
+
+
+            if (query.length === 0) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+
+            const queryDigits = query.replace(/\D/g, '');
+
+
+            const matches = studentsDb.filter(s => {
+                const nameMatch = s.name.toLowerCase().includes(query);
+                const dniDigits = s.dni.replace(/\D/g, '');
+                const dniMatch = queryDigits.length > 0 && dniDigits.includes(queryDigits);
+                return nameMatch || dniMatch;
+            });
+
+
+            if (matches.length === 0) {
+                resultsContainer.innerHTML = '<div style="padding: 10px; font-size: 0.85rem; color: var(--text-muted);">No se encontraron alumnos con ese nombre o DNI.</div>';
+                resultsContainer.style.display = 'block';
+                return;
+            }
+
+
+            matches.slice(0, 10).forEach(st => {
+                const item = document.createElement('div');
+                item.className = 'report-item';
+                item.style.marginBottom = '0';
+                item.style.borderRadius = '0';
+                item.style.borderLeft = 'none';
+                item.style.borderRight = 'none';
+                item.style.borderTop = 'none';
+                item.setAttribute('onclick', `selectStudentFromSearch(${st.id})`);
+                item.innerHTML = `
+                    <div style="font-weight: 600;">${st.name}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${st.course} — DNI: ${st.dni}</div>
+                `;
+                resultsContainer.appendChild(item);
+            });
+
+
+            resultsContainer.style.display = 'block';
+        }
+
+
+        function selectStudentFromSearch(studentId) {
+            const student = studentsDb.find(s => s.id === studentId);
+            if (!student) return;
+
+
+            document.getElementById('filter_year').value = student.year;
+            document.getElementById('filter_division').value = student.division;
+            document.getElementById('filter_specialty').value = student.specialty;
+            updateStudentSelector();
+            document.getElementById('form_student_id').value = student.id;
+            syncStudentData();
+
+
+            document.getElementById('studentSearchInput').value = '';
+            document.getElementById('studentSearchResults').innerHTML = '';
+            document.getElementById('studentSearchResults').style.display = 'none';
+
+
+            pushLog(`[BÚSQUEDA] Alumno "${student.name}" localizado y seleccionado vía buscador rápido (sin recorrer curso por curso).`);
+        }
+
+
+        function renderReportsQueue() {
+            const queueElement = document.getElementById('reportsQueue');
+            queueElement.innerHTML = '';
+
+
+            reportsDb.forEach(rep => {
+                const student = studentsDb.find(s => s.id === rep.student_id);
+                const li = document.createElement('li');
+                li.className = `report-item ${rep.id === currentActiveReportId ? 'active' : ''}`;
+                li.setAttribute('onclick', `selectReport(${rep.id})`);
+
+
+                let severityBadge = `<span class="badge badge-suspenso">ADVERTENCIA (SUSPENSO)</span>`;
+                if (rep.severity === "LEVE") severityBadge = `<span class="badge badge-leve">1° INSTANCIA - LEVE</span>`;
+                if (rep.severity === "GRAVE") severityBadge = `<span class="badge badge-grave">2° INSTANCIA - GRAVE</span>`;
+                if (rep.severity === "MUY GRAVE") severityBadge = `<span class="badge badge-muygrave">3° INSTANCIA - MUY GRAVE</span>`;
+
+
+                li.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+                        <span>ID: #${rep.id}</span>
+                        <span>${rep.issue_date}</span>
+                    </div>
+                    <div style="font-weight: bold; margin-top: 3px;">${student ? student.name : 'Alumno Desconocido'}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; margin-top: 2px;">
+                        ${rep.description}
+                    </div>
+                    <div>${severityBadge}</div>
+                `;
+                queueElement.appendChild(li);
+            });
+        }
+
+
+        function selectReport(id) {
+            currentActiveReportId = id;
+            renderReportsQueue();
+            loadReportIntoForm(id);
+            pushLog(`[SISTEMA] Cambiando visualización al informe ID #${id}.`);
+        }
+
+
+        function loadReportIntoForm(id) {
+            const rep = reportsDb.find(r => r.id === id);
+            if (!rep) return;
+
+
+            const student = studentsDb.find(s => s.id === rep.student_id);
+            if(student) {
+                document.getElementById('filter_year').value = student.year;
+                document.getElementById('filter_division').value = student.division;
+                document.getElementById('filter_specialty').value = student.specialty;
+                updateStudentSelector();
+                document.getElementById('form_student_id').value = rep.student_id;
+            }
+
+
+            document.getElementById('form_description').value = rep.description;
+            document.getElementById('form_issuer_name').value = rep.issuer_name;
+            document.getElementById('form_issuer_role').value = rep.issuer_role;
+            document.getElementById('form_issue_date').value = rep.issue_date;
+            document.getElementById('form_issuer_signature').value = rep.issuer_signature || "Pendiente de firma";
+            document.getElementById('form_student_text').value = rep.student_text;
+            document.getElementById('form_pat_notes').value = rep.pat_notes;
+            document.getElementById('form_council_notes').value = rep.council_notes;
+            document.getElementById('form_additional_notes').value = rep.additional_notes;
+           
+            // Radio buttons severity
+            document.getElementById('rad_leve').checked = (rep.severity === "LEVE");
+            document.getElementById('rad_grave').checked = (rep.severity === "GRAVE");
+            document.getElementById('rad_muygrave').checked = (rep.severity === "MUY GRAVE");
+            document.getElementById('rad_suspenso').checked = (rep.severity === "SUSPENSO");
+
+
+            document.getElementById('form_other_considerations').value = rep.other_considerations;
+            document.getElementById('form_director_signature').value = rep.director_signature || "No Firmado";
+            document.getElementById('form_director_date').value = rep.director_date;
+
+
+            document.getElementById('chk_notify_student').checked = rep.notify_student;
+            document.getElementById('chk_notify_parent').checked = rep.notify_parent;
+
+
+            syncStudentData();
+            updateWorkflowGraphics(rep);
+        }
+
+
+        function updateWorkflowGraphics(rep) {
+            // Reset states
+            for(let i=1; i<=5; i++) {
+                document.getElementById(`ws-${i}`).className = "workflow-step";
+            }
+
+
+            document.getElementById('ws-1').className = "workflow-step completed";
+           
+            if (rep.student_text.trim().length > 0) {
+                document.getElementById('ws-2').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-2').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.pat_notes.trim().length > 0 || rep.council_notes.trim().length > 0) {
+                document.getElementById('ws-3').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-3').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.director_signature && rep.director_signature !== "No Firmado") {
+                document.getElementById('ws-4').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-4').className = "workflow-step current";
+                return;
+            }
+
+
+            if (rep.notify_student && rep.notify_parent) {
+                document.getElementById('ws-5').className = "workflow-step completed";
+            } else {
+                document.getElementById('ws-5').className = "workflow-step current";
+            }
+        }
+
+
+        function changeSimulationRole() {
+            currentRole = document.getElementById('roleSelector').value;
+            const hint = document.getElementById('rolePermissionsHint');
+           
+            // Form inputs mapping
+            const allInputs = document.getElementById('convivenciaForm').querySelectorAll('input, select, textarea');
+            allInputs.forEach(el => el.removeAttribute('disabled'));
+
+
+            // Re-disable hardcoded layouts
+            document.getElementById('form_student_course').setAttribute('disabled', 'true');
+            document.getElementById('form_student_dni').setAttribute('disabled', 'true');
+            document.getElementById('form_student_email').setAttribute('disabled', 'true');
+            document.getElementById('form_issuer_signature').setAttribute('disabled', 'true');
+            document.getElementById('form_director_signature').setAttribute('disabled', 'true');
+
+
+            if (currentRole === "Profesor") {
+                hint.textContent = "Permisos: Puede crear y editar campos de origen (1, 2, 3) y observaciones.";
+                disableFormSections(['block_student_statement', 'block_councils', 'block_dictum', 'block_notifications']);
+                document.getElementById('filter_year').removeAttribute('disabled');
+                document.getElementById('filter_division').removeAttribute('disabled');
+                document.getElementById('filter_specialty').removeAttribute('disabled');
+                document.getElementById('form_student_id').removeAttribute('disabled');
+            }
+            else if (currentRole === "Alumno") {
+                hint.textContent = "Permisos: Ley de CABA de derecho a ser escuchado. Solo edita su descargo (4).";
+                disableFormSections(['all_except_statement']);
+                document.getElementById('form_student_text').removeAttribute('disabled');
+            }
+            else if (currentRole === "Regente") {
+                hint.textContent = "Permisos totales de gestión directiva. Modifica dictámenes, consejos y firmas.";
+                // Regente has access to override everything
+            }
+            else if (currentRole === "Tutor") {
+                hint.textContent = "Permisos: Acceso familiar de conformidad. Solo altera check de notificación (8).";
+                disableFormSections(['all_except_notifications']);
+                document.getElementById('chk_notify_parent').removeAttribute('disabled');
+            }
+            else if (currentRole === "PAT") {
+                hint.textContent = "Permisos: Consulta pedagógica y adición de notas en sección de consejos (5).";
+                disableFormSections(['all_except_pat']);
+                document.getElementById('form_pat_notes').removeAttribute('disabled');
+            }
+            else if (currentRole === "Secretaria") {
+                hint.textContent = "Permisos: Auditoría estricta del documento. Solo lectura completa.";
+                allInputs.forEach(el => el.setAttribute('disabled', 'true'));
+            }
+
+
+            pushLog(`[PERMISOS] Rol simulado cambiado a: ${currentRole}. Interfaz recalculada.`);
+        }
+
+
+        function disableFormSections(criteria) {
+            const form = document.getElementById('convivenciaForm');
+           
+            if(criteria.includes('block_student_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('form_student_text').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_councils') || criteria.includes('all_except_statement') || criteria.includes('all_except_notifications')) {
+                document.getElementById('form_pat_notes').setAttribute('disabled', 'true');
+                document.getElementById('form_council_notes').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_dictum') || criteria.includes('all_except_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('rad_leve').setAttribute('disabled', 'true');
+                document.getElementById('rad_grave').setAttribute('disabled', 'true');
+                document.getElementById('rad_muygrave').setAttribute('disabled', 'true');
+                document.getElementById('rad_suspenso').setAttribute('disabled', 'true');
+                document.getElementById('form_other_considerations').setAttribute('disabled', 'true');
+                document.getElementById('form_director_date').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('block_notifications') || criteria.includes('all_except_statement') || criteria.includes('all_except_pat')) {
+                document.getElementById('chk_notify_student').setAttribute('disabled', 'true');
+                document.getElementById('chk_notify_parent').setAttribute('disabled', 'true');
+            }
+            if(criteria.includes('all_except_statement') || criteria.includes('all_except_notifications') || criteria.includes('all_except_pat')) {
+                document.getElementById('filter_year').setAttribute('disabled', 'true');
+                document.getElementById('filter_division').setAttribute('disabled', 'true');
+                document.getElementById('filter_specialty').setAttribute('disabled', 'true');
+                document.getElementById('form_student_id').setAttribute('disabled', 'true');
+                document.getElementById('form_description').setAttribute('disabled', 'true');
+                document.getElementById('form_issuer_name').setAttribute('disabled', 'true');
+                document.getElementById('form_issuer_role').setAttribute('disabled', 'true');
+                document.getElementById('form_issue_date').setAttribute('disabled', 'true');
+                document.getElementById('form_additional_notes').setAttribute('disabled', 'true');
+            }
+        }
+
+
+        function createNewBlankReport() {
+            currentActiveReportId = Date.now() % 1000; // Fake structural ID
+           
+            // Establecer filtros por defecto para asegurar la visualización de los datos cargados
+            document.getElementById('filter_year').value = 6;
+            document.getElementById('filter_division').value = 2;
+            document.getElementById('filter_specialty').value = "Computación";
+            updateStudentSelector();
+
+
+            const newRep = {
+                id: currentActiveReportId,
+                student_id: 1,
+                description: "",
+                issuer_name: "",
+                issuer_role: "Profesor",
+                issue_date: new Date().toISOString().split('T')[0],
+                issuer_signature: "Pendiente de guardado",
+                student_text: "",
+                pat_notes: "",
+                council_notes: "",
+                additional_notes: "",
+                severity: "SUSPENSO",
+                other_considerations: "",
+                director_signature: "No Firmado",
+                director_date: "",
+                notify_student: false,
+                notify_parent: false,
+                status: "Pendiente"
+            };
+
+
+            reportsDb.unshift(newRep); // Añadir arriba
+            selectReport(currentActiveReportId);
+            showToast("Nuevo formulario vacío instanciado en el cliente.");
+        }
+
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+           
+            let rep = reportsDb.find(r => r.id === currentActiveReportId);
+            if(!rep) return;
+
+
+            // Extraer datos según rol para simular persistencia parcial
+            if(currentRole === "Profesor" || currentRole === "Regente") {
+                rep.student_id = parseInt(document.getElementById('form_student_id').value);
+                rep.description = document.getElementById('form_description').value;
+                rep.issuer_name = document.getElementById('form_issuer_name').value;
+                rep.issuer_role = document.getElementById('form_issuer_role').value;
+                rep.issue_date = document.getElementById('form_issue_date').value;
+                rep.issuer_signature = "FIRMADO_DIGITAL_" + rep.issuer_name.replace(/\s+/g, '').toUpperCase() + "_BUE";
+                rep.additional_notes = document.getElementById('form_additional_notes').value;
+            }
+
+
+            if(currentRole === "Alumno" || currentRole === "Regente") {
+                rep.student_text = document.getElementById('form_student_text').value;
+                if(currentRole === "Alumno" && rep.student_text.trim().length > 0) {
+                    pushLog(`[NOTIFICACIÓN] El alumno disparó alerta automática por correo al equipo PAT tras guardar su descargo.`);
+                }
+            }
+
+
+            if(currentRole === "PAT" || currentRole === "Regente") {
+                rep.pat_notes = document.getElementById('form_pat_notes').value;
+            }
+
+
+            if(currentRole === "Regente") {
+                rep.council_notes = document.getElementById('form_council_notes').value;
+               
+                if(document.getElementById('rad_leve').checked) rep.severity = "LEVE";
+                else if(document.getElementById('rad_grave').checked) rep.severity = "GRAVE";
+                else if(document.getElementById('rad_muygrave').checked) rep.severity = "MUY GRAVE";
+                else rep.severity = "SUSPENSO";
+
+
+                rep.other_considerations = document.getElementById('form_other_considerations').value;
+                rep.director_date = document.getElementById('form_director_date').value;
+               
+                if(rep.director_date) {
+                    rep.director_signature = "FIRMADO_AUTORIDAD_REGENTE_BUE";
+                }
+            }
+
+
+            if(currentRole === "Tutor" || currentRole === "Regente") {
+                rep.notify_parent = document.getElementById('chk_notify_parent').checked;
+            }
+            if(currentRole === "Regente") {
+                rep.notify_student = document.getElementById('chk_notify_student').checked;
+            }
+
+
+            // Re-renderizar y actualizar interfaz
+            renderReportsQueue();
+            loadReportIntoForm(currentActiveReportId);
+            showToast("Cambios guardados con éxito en la simulación.");
+
+
+            // Triggers de negocio (Simulación de correos/tickets)
+            pushLog(`[SQL BACKEND] UPDATE informes SET data = JSON... WHERE id = ${rep.id} -- OK`);
+            if(currentRole === "Profesor") {
+                pushLog(`[PROCESO AUTOMÁTICO] Ticket instanciado. Despachando correos electrónicos a Familia (${studentsDb.find(s=>s.id===rep.student_id).parent_email}) y Alumno.`);
+            }
+        }
+
+
+        function resetFormToActive() {
+            loadReportIntoForm(currentActiveReportId);
+            showToast("Campos revertidos a su estado guardado.");
+        }
+
+
+        function pushLog(text) {
+            const logs = document.getElementById('backendLogs');
+            logs.textContent += "\n" + text;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<span>ℹ️</span> <span>${message}</span>`;
+            container.appendChild(toast);
+           
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
+
