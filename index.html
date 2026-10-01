@@ -3,15 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Informes de Convivencia - Escuela Técnica Ingeniero Eduardo Latzina</title>
-    <link rel="icon" type="image/png" id="favicon-link" href="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/escudo-gQACKKFp3moDBH4vVR8LRsT18VdSDt.png">
+    <title>Sistema de Informes de Convivencia — Escuela Técnica N° 35</title>
+  <script>
+    try {
+      if (sessionStorage.getItem('sesionActual')) {
+        document.documentElement.classList.add('auth-session-checking');
+      }
+    } catch (_) {}
+  </script>
+    <link rel="icon" type="image/png" href="./escudo.png?v=10">
+  <script>
+    try {
+      if (sessionStorage.getItem('sesionActual')) {
+        document.documentElement.classList.add('auth-session-checking');
+      }
+    } catch (_) {}
+  </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             /* ==========================================
                PALETA INSTITUCIONAL
                Colores tomados del escudo de la Escuela Técnica
-               N°35 D.E. 18 "Ing. Eduardo Latzina"
+               N° 35 D.E. 18 "Ing. Eduardo Latzina"
                ========================================== */
             --rojo-institucional: #E1301E;
             --rojo-institucional-oscuro: #b3271a;
@@ -46,7 +60,7 @@
 
         body { background-color: var(--bg-main); color: var(--text-dark); line-height: 1.6; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* ── ENCABEZADO ── */
+        /* ── HEADER ── */
         header {
             background-color: var(--brand);
             color: white;
@@ -70,7 +84,7 @@
         .header-title p { font-size: 0.75rem; color: #93c5fd; }
         .simulator-badge { background-color: var(--accent); color: var(--primary-dark); padding: 3px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; }
 
-        /* ── BARRA LATERAL ── */
+        /* ── SIDEBAR ── */
         #sidebar {
             position: fixed;
             top: 56px; bottom: 0; left: 0;
@@ -106,7 +120,7 @@
         .sidebar-footer { padding: 14px 16px; border-top: 1px solid #1e293b; font-size: 0.68rem; color: #475569; line-height: 1.5; }
         .sidebar-footer strong { color: #94a3b8; display: block; font-size: 0.72rem; margin-bottom: 2px; }
 
-        /* Selector de rol en la barra lateral */
+        /* Role selector in sidebar */
         .sidebar-role { padding: 10px 12px; border-top: 1px solid #1e293b; }
         .sidebar-role label { display: block; font-size: 0.7rem; color: #64748b; font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
         .sidebar-role select { width: 100%; padding: 6px 8px; border-radius: 4px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-size: 0.8rem; cursor: pointer; }
@@ -122,7 +136,7 @@
         .card { background: var(--bg-card); border-radius: var(--radius); border: 1px solid #e2e8f0; padding: 20px; box-shadow: var(--shadow); margin-bottom: 20px; }
         .card-title { font-size: 1.05rem; color: var(--primary); margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* ── ELEMENTOS DE FORMULARIO (sin cambios) ── */
+        /* ── FORM ELEMENTS (unchanged) ── */
         .role-bar { background-color: #e2e8f0; padding: 8px 20px; display: flex; align-items: center; gap: 12px; font-size: 0.85rem; border-bottom: 1px solid var(--border); }
         .role-bar select { padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border); font-weight: 600; background: white; color: var(--primary); }
 
@@ -150,7 +164,7 @@
         .btn-danger:hover { background-color: #dc2626; }
         .btn-sm { padding: 4px 10px; font-size: 0.78rem; }
 
-        /* ── INDICADORES Y SECCIONES DEL FLUJO DE TRABAJO (sin cambios) ── */
+        /* ── WORKFLOW INDICATORS & SECTIONS (unchanged) ── */
         .workflow-indicator { display: flex; justify-content: space-between; margin-bottom: 22px; border-radius: 30px; overflow: hidden; background-color: #e2e8f0; }
         .workflow-step { flex: 1; text-align: center; padding: 7px 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
         .workflow-step.completed { background-color: #d1fae5; color: #065f46; }
@@ -160,7 +174,7 @@
         .section-block h3 { font-size: 0.98rem; color: var(--primary-dark); margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
         .info-tag-container { background-color: #eff6ff; border-left: 4px solid var(--primary-light); padding: 9px; margin-bottom: 14px; font-size: 0.83rem; color: #1e40af; }
 
-        /* ── ETIQUETA ── */
+        /* ── BADGE ── */
         .badge { font-size: 0.72rem; padding: 2px 8px; border-radius: 12px; font-weight: 600; display: inline-block; margin-top: 4px; }
         .badge-leve { background-color: #fef3c7; color: #d97706; }
         .badge-grave { background-color: #fee2e2; color: #dc2626; }
@@ -170,13 +184,13 @@
         .badge-resuelto { background-color: #d1fae5; color: #065f46; }
         .badge-anulado { background-color: #fee2e2; color: #991b1b; }
 
-        /* ── LISTA DE INFORMES ── */
+        /* ── REPORTS LIST ── */
         .report-item { padding: 11px; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 9px; cursor: pointer; transition: all 0.2s; background-color: #f8fafc; }
         .report-item:hover { border-color: var(--primary-light); background-color: #f0fdf4; }
         .report-item.active { border-left: 5px solid var(--primary); background-color: #eff6ff; font-weight: 500; }
         .report-list { list-style: none; }
 
-        /* ── LISTA DE ESTUDIANTES — nueva cuadrícula profesional con estilo de tabla ── */
+        /* ── STUDENTS LIST — new table-style professional grid ── */
         .students-grid { display: flex; flex-direction: column; gap: 0; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: white; box-shadow: var(--shadow); }
         .students-table-header {
             display: grid;
@@ -225,7 +239,7 @@
         .link-btn:hover { text-decoration: underline; }
         .student-card-footer { display: none; }
 
-        /* ── VISTA DETALLADA DEL ESTUDIANTE — nuevo diseño profesional ── */
+        /* ── STUDENT DETAIL VIEW — new professional layout ── */
         .student-detail-strip {
             display: flex; align-items: center; gap: 20px;
             background: linear-gradient(135deg, #0f2159 0%, #1e3a8a 60%, #1d4ed8 100%);
@@ -240,29 +254,36 @@
         .student-detail-info p { font-size: 0.8rem; color: rgba(255,255,255,0.7); }
         .student-detail-info .detail-sub { display: flex; gap: 16px; margin-top: 4px; flex-wrap: wrap; }
         .detail-chip { font-size: 0.72rem; background: rgba(255,255,255,0.12); padding: 2px 9px; border-radius: 20px; color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.15); }
-        /* ── KPI / ESTADÍSTICAS ── */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 22px; }
-        .kpi-card {
-            background: var(--bg-card); border: 1px solid #e2e8f0; border-radius: 10px;
-            padding: 16px 18px; box-shadow: var(--shadow); border-top: 3px solid var(--border);
-            display: flex; flex-direction: column; gap: 4px; transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 18px -6px rgb(0 0 0 / 0.12); }
-        .kpi-card .kpi-value { font-size: 2rem; font-weight: 800; color: var(--text-dark); line-height: 1; }
-        .kpi-card .kpi-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
-        .kpi-card .kpi-icon { font-size: 1.1rem; margin-bottom: 4px; }
-        .kpi-leve        { border-top-color: #f59e0b; }
-        .kpi-grave       { border-top-color: #ef4444; }
-        .kpi-muygrave    { border-top-color: #9333ea; }
-        .kpi-advertencia { border-top-color: #94a3b8; }
-        .kpi-total       { border-top-color: var(--primary); }
-        .kpi-pendiente   { border-top-color: #d97706; }
-        .kpi-resuelto    { border-top-color: #10b981; }
-        .kpi-anulado     { border-top-color: #dc2626; }
+        /* ── Resumen institucional de informes ── */
         .kpi-section-label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .kpi-section-label::after { content:''; flex:1; height:1px; background:#e2e8f0; }
+        .kpi-section-label::after { content:''; flex:1; height:1px; background:var(--border); }
+        .overview-dashboard { display:grid; grid-template-columns:minmax(180px, .78fr) minmax(0, 2fr); background:var(--bg-card); border:1px solid var(--border); border-radius:8px; margin-bottom:22px; overflow:hidden; }
+        .overview-total { display:flex; flex-direction:column; justify-content:center; padding:22px 26px; border-right:1px solid var(--border); background:#f8f7f2; }
+        .overview-kicker { color:var(--text-muted); font-size:.72rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; }
+        .overview-value { color:var(--azul-institucional-oscuro); font-size:clamp(2.6rem, 5vw, 3.65rem); font-weight:750; letter-spacing:-.06em; line-height:1.1; font-variant-numeric:tabular-nums; }
+        .overview-caption { color:var(--text-muted); font-size:.78rem; margin-top:5px; }
+        .overview-breakdown { display:grid; align-content:center; gap:16px; padding:20px 26px; }
+        .overview-row { min-width:0; }
+        .overview-row-head { display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-bottom:6px; }
+        .overview-row-label { color:#34372f; font-size:.84rem; font-weight:600; }
+        .overview-row-value { color:var(--text-dark); font-size:.93rem; font-weight:700; font-variant-numeric:tabular-nums; }
+        .overview-meter { height:5px; border-radius:999px; background:#eeede7; overflow:hidden; }
+        .overview-meter > span { display:block; height:100%; width:0; border-radius:inherit; transition:width .25s ease; }
+        .overview-pending .overview-meter > span { background:var(--dorado-oscuro); }
+        .overview-resolved .overview-meter > span { background:var(--verde-institucional); }
+        .overview-cancelled .overview-meter > span { background:var(--rojo-institucional); }
+        @media (max-width: 640px) {
+            .overview-dashboard { grid-template-columns:1fr; }
+            .overview-total { padding:17px 20px; border-right:0; border-bottom:1px solid var(--border); }
+            .overview-value { font-size:2.7rem; }
+            .overview-breakdown { gap:14px; padding:18px 20px; }
+        }
+        .line-icon { display:inline-block; width:18px; height:18px; flex:0 0 18px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; vertical-align:middle; }
+        .nav-icon { display:inline-flex; align-items:center; justify-content:center; width:20px; color:currentColor; }
+        .inline-icon { width:17px; height:17px; margin-right:5px; vertical-align:-3px; }
+        .empty-icon { display:block; width:30px; height:30px; margin:0 auto 10px; color:#7c8588; }
 
-        /* ── VENTANA VENTANA MODAL DEL HISTORIAL ── */
+        /* ── MODAL HISTORIAL ── */
         .historial-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:300; display:none; align-items:center; justify-content:center; padding:16px; }
         .historial-modal-overlay.open { display:flex; }
         .historial-modal-box { background:white; border-radius:12px; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-width:680px; width:100%; max-height:88vh; display:flex; flex-direction:column; }
@@ -270,7 +291,7 @@
         .historial-modal-header h3 { font-size:1rem; font-weight:700; color:var(--text-dark); }
         .historial-modal-body { padding:18px 20px; overflow-y:auto; flex:1; }
 
-        /* ── ELEMENTOS DEL DETALLE DE INFORMES — estilo de tarjetas limpio ── */
+        /* ── REPORT DETAIL ITEMS — clean card style ── */
         .report-history-item { padding: 14px 16px; border: 1px solid #e8edf3; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #cbd5e1; background: #fafbfd; transition: box-shadow 0.15s; }
         .report-history-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
         .report-history-item.leve { border-left-color: #f59e0b; background: #fffdf7; }
@@ -283,29 +304,29 @@
         .report-history-item h5 { font-size: 0.88rem; font-weight: 600; color: var(--text-dark); line-height: 1.4; }
         .report-history-item p { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* ── FICHA DETALLADA DEL ALUMNO ── */
+        /* ── ALUMNO DETAIL FICHA ── */
         .alumno-ficha { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
         .alumno-ficha-field { background:#f8fafc; border:1px solid #e8edf3; border-radius:7px; padding:10px 14px; }
         .alumno-ficha-field .field-label { font-size:0.67rem; font-weight:700; text-transform:uppercase; letter-spacing:0.6px; color:#94a3b8; margin-bottom:3px; }
         .alumno-ficha-field .field-val { font-size:0.88rem; font-weight:600; color:#1e293b; }
 
-        /* ── FILTROS ── */
+        /* ── FILTERS ── */
         .filters-bar { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 18px; box-shadow: var(--shadow); }
         .filters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
 
-        /* ── PESTAÑAS ── */
+        /* ── TABS ── */
         .tabs-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
         .tab-btn { padding: 7px 14px; border-radius: 6px; border: none; font-size: 0.83rem; font-weight: 600; cursor: pointer; transition: all 0.15s; background: #f1f5f9; color: #475569; }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-btn .tab-count { font-size: 0.7rem; background: rgba(255,255,255,0.2); padding: 1px 5px; border-radius: 8px; margin-left: 4px; }
         .tab-btn:not(.active) .tab-count { background: #e2e8f0; color: #64748b; }
 
-        /* ── NOTIFICACIÓN EMERGENTE ── */
+        /* ── TOAST ── */
         .toast-container { position: fixed; bottom: 18px; right: 18px; z-index: 9999; }
         .toast { background-color: #1e293b; color: white; padding: 11px 20px; border-radius: 6px; box-shadow: var(--shadow); margin-top: 8px; display: flex; align-items: center; gap: 8px; animation: slideIn 0.3s ease-out forwards; }
         @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* ── VENTANA MODAL ── */
+        /* ── MODAL ── */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: center; justify-content: center; padding: 16px; }
         .modal-overlay.open { display: flex; }
         .modal-box { background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-width: 700px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; }
@@ -313,10 +334,10 @@
         .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); }
         .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
         .modal-footer { padding: 14px 20px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 12px 12px; display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; flex-wrap: wrap; }
-        .btn-close { background: none; border: none; font-size: 1.3rem; cursor: pointer; color: #64748b; line-height: 1; }
+        .btn-close { display:inline-flex; align-items:center; justify-content:center; background:none; border:none; padding:4px; cursor:pointer; color:#64748b; line-height:1; }
         .btn-close:hover { color: #0f172a; }
 
-        /* ── VENTANA VENTANA MODAL DE DETALLE — secciones refinadas ── */
+        /* ── MODAL DETALLE — refined sections ── */
         .modal-section-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #94a3b8; margin-bottom: 8px; margin-top: 16px; }
         .modal-section-title:first-child { margin-top: 0; }
         .modal-field-box { font-size: 0.88rem; color: #334155; background: #f8fafc; padding: 11px 14px; border-radius: 7px; border: 1px solid #e8edf3; line-height: 1.6; }
@@ -335,28 +356,29 @@
         /* ── BACK BTN ── */
         .back-btn { display: flex; align-items: center; gap: 7px; background: none; border: none; cursor: pointer; color: #64748b; font-size: 0.9rem; font-weight: 600; padding: 0; margin-bottom: 18px; }
         .back-btn:hover { color: var(--primary); }
-        .back-btn::before { content: '←'; font-size: 1.1rem; }
 
-        /* ── CONSOLA DEL BACKEND ── */
+
+        /* ── BACKEND CONSOLE ── */
         .console-card { background: #1e293b; color: #f8fafc; border-radius: var(--radius); padding: 14px; margin-top: 16px; }
         .console-title { color: #38bdf8; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; }
         #backendLogs { font-family: monospace; font-size: 0.82rem; overflow-x: auto; white-space: pre-wrap; max-height: 120px; overflow-y: auto; }
 
-        /* ── CUADRO DE BÚSQUEDA ── */
+        /* ── SEARCH BOX ── */
         .search-box { position: relative; }
         .search-box input { padding-left: 32px; }
-        .search-box::before { content: '🔍'; position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; }
+        .search-box::before { content:''; position:absolute; left:10px; top:50%; width:11px; height:11px; border:1.5px solid #64748b; border-radius:50%; transform:translateY(-60%); }
+        .search-box::after { content:''; position:absolute; left:21px; top:calc(50% + 3px); width:5px; border-top:1.5px solid #64748b; transform:rotate(45deg); transform-origin:left center; }
         #studentSearchResults { display: none; position: absolute; z-index: 10; left: 0; right: 0; background-color: #fff; border: 1px solid var(--border); border-radius: 6px; margin-top: 4px; max-height: 260px; overflow-y: auto; box-shadow: var(--shadow); }
 
-        /* ── TÍTULO DE PÁGINA ── */
+        /* ── PAGE TITLE ── */
         .page-title { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); margin-bottom: 6px; }
         .page-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
 
         /* ── EMPTY STATE ── */
         .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
-        .empty-state .empty-icon { font-size: 3rem; margin-bottom: 10px; }
+        .empty-state .empty-icon { margin-bottom: 10px; }
 
-        /* Botón PDF */
+        /* PDF button */
         .btn-pdf { background: #1e293b; color: white; }
         .btn-pdf:hover { background: #0f172a; }
 
@@ -370,13 +392,12 @@
             }
             #sidebar.open { transform: translateX(0); }
             #app-body { margin-left: 0; }
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
             .charts-row { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
             .modal-content { width: 95% !important; max-height: 90vh; }
         }
         /* ==========================================
-           INICIO DE SESIÓN
+           LOGIN
            ========================================== */
         body.logged-out header,
         body.logged-out #sidebar,
@@ -385,7 +406,20 @@
         body.logged-out .toast-container { display: none !important; }
         body.logged-in #login-screen { display: none !important; }
 
-        #login-screen {
+        #auth-loading {
+    position:fixed; inset:0; z-index:10000; display:none; align-items:center; justify-content:center;
+    flex-direction:column; gap:12px; background:#f8f7f2; color:#59616a;
+    font-size:.85rem; letter-spacing:.01em;
+  }
+  #auth-loading-spinner {
+    width:26px; height:26px; border:2px solid #dedbd2; border-top-color:#a03a2b;
+    border-radius:50%; animation:auth-loading-spin .8s linear infinite;
+  }
+  @keyframes auth-loading-spin { to { transform:rotate(360deg); } }
+  html.auth-session-checking body > :not(#auth-loading) { visibility:hidden !important; }
+  html.auth-session-checking #auth-loading { display:flex; }
+  html.auth-session-checking, html.auth-session-checking body { background:#f8f7f2; }
+  #login-screen {
             min-height: 100vh; width: 100%;
             display: flex; align-items: center; justify-content: center;
             background: linear-gradient(160deg, var(--azul-institucional) 0%, var(--azul-institucional-oscuro) 55%, #0e223a 100%);
@@ -413,7 +447,6 @@
         .demo-user-row:hover { color: var(--primary); }
 
         @media (max-width: 480px) {
-            .kpi-grid { grid-template-columns: 1fr 1fr; }
             header { padding: 10px 12px; }
             .header-title h1 { font-size: 0.95rem; }
             .header-title p { font-size: 0.7rem; }
@@ -452,12 +485,7 @@
         .sidebar-footer { color: #c8d3dc; }
         .sidebar-footer strong { color: #fff; }
         .header-title p { color: #fff3c1; }
-        .kpi-leve { border-top-color: var(--dorado-oscuro); }
-        .kpi-grave, .kpi-anulado { border-top-color: var(--rojo-institucional); }
-        .kpi-total { border-top-color: var(--azul-institucional); }
-        .kpi-resuelto { border-top-color: var(--verde-institucional); }
-        .kpi-muygrave, .kpi-anulado { border-top-color: var(--rojo-institucional); }
-        .kpi-advertencia { border-top-color: #a9a595; }
+
         .sev-count.leve-c { color: #796b16; }
         .sev-count.grave-c, .sev-count.mg-c { color: var(--rojo-institucional-oscuro); }
         .sev-count.total-c { color: var(--azul-institucional); }
@@ -477,7 +505,7 @@
         .header-emblem img, .login-logo, .sidebar-footer img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; }
         .login-logo { width: 84px; height: 112px; }
         .header-emblem { width: 38px; height: 38px; padding: 3px; }
-        .sidebar-footer .sidebar-logo { display: block; width: 40px; height: auto; max-height: 56px; object-fit: contain; margin: 0 auto 8px; }
+        .sidebar-footer .sidebar-logo { display: block; width: 40px; height: auto; max-height: 56px; object-fit: contain; margin: 0 0 8px; }
         @media (max-width: 640px) {
             .app-section { padding: 16px 12px; }
             .form-row[style*="repeat(4,1fr)"] { grid-template-columns: 1fr 1fr !important; }
@@ -490,16 +518,19 @@
     </style>
 </head>
 <body class="logged-out">
-
-<!-- ══════════════════════════════════════════════════════════════
-     PANTALLA DE INICIO DE SESIÓN
+  <div id="auth-loading" role="status" aria-live="polite" aria-label="Restaurando sesión">
+    <span id="auth-loading-spinner" aria-hidden="true"></span>
+    <span>Restaurando sesión</span>
+  </div>
+  <!-- ══════════════════════════════════════════════════════════════
+     PANTALLA DE LOGIN
      El rol del usuario se determina por la cuenta autenticada,
      nunca se elige libremente desde esta pantalla.
      ══════════════════════════════════════════════════════════════ -->
 <div id="login-screen">
     <div class="login-box">
-        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/escudo-gQACKKFp3moDBH4vVR8LRsT18VdSDt.png" class="login-logo" alt="Escudo de la Escuela Técnica N°35 D.E. 18" />
-        <h1>Escuela Técnica N°35 D.E. 18</h1>
+        <img src="./escudo.png" class="login-logo" alt="Escudo de la Escuela Técnica N° 35 D.E. 18" />
+        <h1>Escuela Técnica N° 35 D.E. 18</h1>
         <p class="login-subtitle">Ing. Eduardo Latzina · Sistema de Informes de Convivencia</p>
 
         <div class="login-demo-notice">
@@ -534,7 +565,7 @@
     <div class="modal-content" style="max-width:420px;">
         <div class="modal-header">
             <h3>Recuperar contraseña</h3>
-            <button class="modal-close" onclick="cerrarRecuperarPassword()">&times;</button>
+            <button class="modal-close" aria-label="Cerrar" onclick="cerrarRecuperarPassword()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="modal-body">
             <p style="font-size:0.88rem; color:#334155; line-height:1.7;">
@@ -552,14 +583,14 @@
     </div>
 </div>
 
-<!-- ═══════════════════ ENCABEZADO ═══════════════════ -->
+<!-- ═══════════════════ HEADER ═══════════════════ -->
 <header>
     <div class="header-title">
-        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Abrir menú" title="Menú">☰</button>
-        <div class="header-emblem"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/escudo-gQACKKFp3moDBH4vVR8LRsT18VdSDt.png" alt="Escudo Escuela Técnica N°35"></div>
+        <button class="mobile-menu-btn" onclick="toggleMobileSidebar()" aria-label="Abrir menú" title="Menú"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <div class="header-emblem"><img src="./escudo.png" alt="Escudo Escuela Técnica N° 35"></div>
         <div>
             <h1>Sistema de Informes de Convivencia</h1>
-            <p>Escuela Técnica N°35 D.E. 18 · Ing. Eduardo Latzina</p>
+            <p>Escuela Técnica N° 35 D.E. 18 · Ing. Eduardo Latzina</p>
         </div>
     </div>
     <div id="header-user-box" style="display:flex; align-items:center; gap:10px;">
@@ -568,20 +599,20 @@
 </header>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
 
-<!-- ═══════════════════ BARRA LATERAL ═══════════════════ -->
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
 <aside id="sidebar">
     <nav class="sidebar-nav">
         <button class="nav-btn active" onclick="showSection('informes')" id="nav-informes">
-            <span class="nav-icon">📋</span> Informes
+            <span class="nav-icon"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h7l4 4V20H7z"/><path d="M14 3.75v4h4M10 12h5M10 16h5"/></svg></span> Informes
         </button>
         <button class="nav-btn" onclick="showSection('alumnos')" id="nav-alumnos">
-            <span class="nav-icon">🎓</span> Alumnos
+            <span class="nav-icon"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-3.2 3.1-5 7-5s6.4 1.8 7 5"/></svg></span> Alumnos
         </button>
         <button class="nav-btn" onclick="showSection('notificaciones')" id="nav-notificaciones">
-            <span class="nav-icon">🔔</span> Notificaciones
+            <span class="nav-icon"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></span> Notificaciones
         </button>
         <button class="nav-btn" onclick="showSection('ajustes')" id="nav-ajustes">
-            <span class="nav-icon">⚙️</span> Ajustes
+            <span class="nav-icon"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.7 2.9-.2-.1a1.7 1.7 0 0 0-1.9.3l-.1.1h-3.4l-.1-.2a1.7 1.7 0 0 0-1.4-1.1 1.7 1.7 0 0 0-1.2.3l-.2.1-2.9-1.7.1-.2a1.7 1.7 0 0 0-.3-1.9l-.1-.1v-3.4l.2-.1a1.7 1.7 0 0 0 1.1-1.4 1.7 1.7 0 0 0-.3-1.2l-.1-.2 1.7-2.9.2.1a1.7 1.7 0 0 0 1.9-.3l.1-.1h3.4l.1.2a1.7 1.7 0 0 0 1.4 1.1 1.7 1.7 0 0 0 1.2-.3l.2-.1 2.9 1.7-.1.2a1.7 1.7 0 0 0 .3 1.9l.1.1v3.4z"/></svg></span> Ajustes
         </button>
     </nav>
     <div class="sidebar-role">
@@ -591,8 +622,8 @@
         <button class="btn btn-danger" style="width:100%; font-size:0.78rem; padding:6px;" onclick="cerrarSesion()">Cerrar sesión</button>
     </div>
     <div class="sidebar-footer">
-        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/escudo-gQACKKFp3moDBH4vVR8LRsT18VdSDt.png" alt="Escudo institucional" alt="Escudo institucional" style="width:34px;height:34px;object-fit:contain;display:block;margin:0 auto 6px;">
-        <strong>Escuela Técnica N��35</strong>
+        <img src="./escudo.png" alt="Escudo institucional" style="width:34px;height:34px;object-fit:contain;display:block;margin:0 0 6px;">
+        <strong>Escuela Técnica N° 35</strong>
         Ing. Eduardo Latzina · D.E. 18
     </div>
 </aside>
@@ -600,16 +631,16 @@
 <!-- ═══════════════════ APP BODY ═══════════════════ -->
 <div id="app-body">
 
-<!-- ────────────────── SECCIÓN: INFORMES ────────────────── -->
+<!-- ────────────────── SECTION: INFORMES ────────────────── -->
 <div id="section-informes" class="app-section visible">
     <div class="page-title">Informes de Convivencia</div>
     <div class="page-subtitle">Gestión de informes disciplinarios según el Reglamento de Convivencia CABA</div>
 
     <!-- ESTADÍSTICAS GENERALES -->
     <div class="kpi-section-label">Panel General de Estadísticas</div>
-    <div class="kpi-grid" id="informes-kpi-overview"></div>
+    <div id="informes-kpi-overview"></div>
 
-    <!-- PESTAÑAS -->
+    <!-- TABS -->
     <div class="tabs-row" id="informes-tabs">
         <button class="tab-btn active" onclick="setInformesTab('todos')" id="tab-todos">Todos <span class="tab-count" id="cnt-todos">0</span></button>
         <button class="tab-btn" onclick="setInformesTab('pendiente')" id="tab-pendiente">Pendientes <span class="tab-count" id="cnt-pendiente">0</span></button>
@@ -617,7 +648,7 @@
         <button class="tab-btn" onclick="setInformesTab('anulado')" id="tab-anulado">Anulados <span class="tab-count" id="cnt-anulado">0</span></button>
     </div>
 
-    <!-- FILTROS -->
+    <!-- FILTERS -->
     <div class="filters-bar">
         <div class="filters-grid">
             <div>
@@ -644,13 +675,13 @@
         </div>
     </div>
 
-    <!-- LISTA DE INFORMES -->
+    <!-- REPORTS LIST -->
     <div id="informes-list"></div>
 </div>
 
-<!-- ────────────────── SECCIÓN: ALUMNOS ────────────────── -->
+<!-- ────────────────── SECTION: ALUMNOS ────────────────── -->
 <div id="section-alumnos" class="app-section">
-    <!-- VISTA DE LISTA DE ESTUDIANTES -->
+    <!-- STUDENT LIST VIEW -->
     <div id="view-alumnos-lista">
         <div class="page-title">Alumnos</div>
         <div class="page-subtitle">Historial de informes y seguimiento por estudiante</div>
@@ -701,22 +732,22 @@
             </div>
         </div>
         <div id="alumnos-empty" class="empty-state" style="display:none;">
-            <div class="empty-icon">🔍</div>
+            <svg class="empty-icon line-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4 4"/></svg>
             <p>No se encontraron alumnos</p>
         </div>
     </div>
 
-    <!-- VISTA DETALLADA DEL ESTUDIANTE -->
+    <!-- STUDENT DETAIL VIEW -->
     <div id="view-alumno-detalle" style="display:none;">
-        <button class="back-btn" onclick="volverALista()">Volver a Alumnos</button>
+        <button class="back-btn" onclick="volverALista()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m7 7-7-7 7-7"/></svg>Volver a Alumnos</button>
 
         <!-- Ficha del alumno -->
         <div id="alumno-ficha-header"></div>
 
         <!-- Botón historial + acciones -->
         <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="abrirHistorialModal()">📋 Ver historial de informes</button>
-            <button class="btn btn-pdf" onclick="downloadPDFAlumno()">⬇ Descargar PDF del legajo</button>
+            <button class="btn btn-primary" onclick="abrirHistorialModal()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h7l4 4V20H7z"/><path d="M14 3.75v4h4M10 12h5M10 16h5"/></svg> Ver historial de informes</button>
+            <button class="btn btn-pdf" onclick="downloadPDFAlumno()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg> Descargar PDF del legajo</button>
         </div>
 
         <!-- Resumen compacto -->
@@ -724,13 +755,13 @@
     </div>
 </div>
 
-<!-- ────────────────── SECCIÓN: NOTIFICACIONES ────────────────── -->
+<!-- ────────────────── SECTION: NOTIFICACIONES ────────────────── -->
 <div id="section-notificaciones" class="app-section">
     <div class="page-title">Notificaciones</div>
     <div class="page-subtitle">Registro de notificaciones generadas por el sistema (alumnos, familias, PAT y autoridades)</div>
     <div class="card" style="background:#fffbeb;border:1px solid var(--accent);margin-bottom:16px;">
         <div style="font-size:0.85rem;color:#5c5220;">
-            ⚠️ <strong>Estado actual: registro sin envío real.</strong> El sistema deja constancia de cada notificación
+            <svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3z"/><path d="M12 9v5m0 3h.01"/></svg><strong>Estado actual: registro sin envío real.</strong> El sistema deja constancia de cada notificación
             (destinatario, tipo, informe relacionado, fecha y estado) pero el envío efectivo por correo o mensajería
             requiere conectar un servicio institucional real (SMTP / API de correo). Nunca deben colocarse credenciales
             de ese servicio dentro del código del frontend.
@@ -742,7 +773,7 @@
     </div>
 </div>
 
-<!-- ────────────────── SECCIÓN: AJUSTES ────────────────── -->
+<!-- ────────────────── SECTION: AJUSTES ────────────────── -->
 <div id="section-ajustes" class="app-section">
     <div class="page-title">Ajustes</div>
     <div class="page-subtitle">Configuración del sistema</div>
@@ -759,12 +790,12 @@
     <div class="card">
         <div class="card-title">Qué está implementado y qué requiere infraestructura real</div>
         <ul style="font-size:0.87rem;color:#334155;line-height:1.9;padding-left:20px;">
-            <li>✅ <strong>Login con mail/contraseña</strong> y rol asociado a la cuenta (ya no seleccionable libremente).</li>
-            <li>✅ <strong>Permisos centralizados</strong> por rol (13 roles institucionales) en un único módulo.</li>
-            <li>✅ Gestión de informes, alumnos, descargo, intervenci��n PAT, dictamen, historial y PDF (heredado y mejorado).</li>
-            <li>✅ Registro de notificaciones y auditoría de acciones importantes (en memoria).</li>
-            <li>✅ Interfaz responsive con menú lateral adaptado a celular.</li>
-            <li>⚠️ <strong>Requiere backend real:</strong> autenticación segura del lado servidor, hash de contraseñas,
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> <strong>Login con mail/contraseña</strong> y rol asociado a la cuenta (ya no seleccionable libremente).</li>
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> <strong>Permisos centralizados</strong> por rol (13 roles institucionales) en un único módulo.</li>
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> Gestión de informes, alumnos, descargo, intervención PAT, dictamen, historial y PDF (heredado y mejorado).</li>
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> Registro de notificaciones y auditoría de acciones importantes (en memoria).</li>
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg> Interfaz responsive con menú lateral adaptado a celular.</li>
+            <li><svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3z"/><path d="M12 9v5m0 3h.01"/></svg> <strong>Requiere backend real:</strong> autenticación segura del lado servidor, hash de contraseñas,
                 envío efectivo de mails/citaciones, recuperación de contraseña, persistencia entre sesiones/dispositivos
                 y borrado/archivado automático de datos según política institucional.</li>
         </ul>
@@ -773,10 +804,10 @@
     <div class="card">
         <div class="card-title">Acerca de</div>
         <div style="font-size:0.87rem;color:#334155;line-height:1.8;">
-            <p><strong>Sistema de Informes de Convivencia — Escuela Técnica N°35 D.E. 18 "Ing. Eduardo Latzina"</strong></p>
+            <p><strong>Sistema de Informes de Convivencia — Escuela Técnica N° 35 D.E. 18 "Ing. Eduardo Latzina"</strong></p>
             <p style="margin-top:8px;">Versión <strong>v3.0 (prototipo funcional evolutivo)</strong></p>
             <div style="margin-top:12px;background:#fffbeb;border:1px solid var(--accent);border-radius:6px;padding:10px;font-size:0.83rem;color:#5c5220;">
-                ⚠️ Los datos de alumnos, informes y usuarios de esta versión son <strong>datos de prueba</strong> y no
+                <svg class="line-icon inline-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3z"/><path d="M12 9v5m0 3h.01"/></svg> Los datos de alumnos, informes y usuarios de esta versión son <strong>datos de prueba</strong> y no
                 persisten entre sesiones ni representan personas reales de la institución. No debe utilizarse todavía
                 para gestionar información real de alumnos hasta contar con backend, base de datos y autenticación
                 del lado del servidor.
@@ -785,15 +816,15 @@
     </div>
 </div>
 
-<!-- ────────────────── VENTANA VENTANA MODAL: NUEVO/EDITAR INFORME ────────────────── -->
+<!-- ────────────────── MODAL: NUEVO/EDITAR INFORME ────────────────── -->
 <div id="modal-informe" class="modal-overlay">
     <div class="modal-box" style="max-width:820px;">
         <div class="modal-header">
             <h3 id="modal-informe-title">Nuevo Informe</h3>
-            <button class="btn-close" onclick="closeReportModal()">✕</button>
+            <button class="btn-close" aria-label="Cerrar" onclick="closeReportModal()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="modal-body">
-            <!-- Indicación del rol para la ventana modal -->
+            <!-- Role hint for modal -->
             <div id="modal-role-hint" class="info-tag-container" style="margin-bottom:14px;"></div>
 
             <div class="workflow-indicator" id="modal-workflow">
@@ -918,7 +949,7 @@
                     </div>
                     <div class="form-group">
                         <label>Informe del Consejo de Convivencia Institucional</label>
-                        <textarea id="form_council_notes" rows="2" placeholder="Resolución o análisis del cuerpo colegiado de convivencia..."></textarea>
+                        <textarea id="form_council_notes" rows="2" placeholder="Resolución o an����lisis del cuerpo colegiado de convivencia..."></textarea>
                     </div>
                 </div>
 
@@ -977,19 +1008,19 @@
     </div>
 </div>
 
-<!-- ─────���──────────── VENTANA VENTANA MODAL: DETALLE DEL INFORME ────────────────── -->
+<!-- ───────────────── MODAL: DETALLE INFORME ────────────────── -->
 <div id="modal-detalle" class="modal-overlay">
     <div class="modal-box" style="max-width:680px;">
         <div class="modal-header">
             <h3>Detalle del Informe</h3>
-            <button class="btn-close" onclick="closeDetailModal()">✕</button>
+            <button class="btn-close" aria-label="Cerrar" onclick="closeDetailModal()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="modal-body" id="modal-detalle-body"></div>
         <div class="modal-footer" id="modal-detalle-footer"></div>
     </div>
 </div>
 
-<!-- ────────────────── CONSOLA DEL BACKEND ────────────────── -->
+<!-- ────────────────── BACKEND CONSOLE ────────────────── -->
 <div style="padding:0 24px 24px;" id="console-wrapper">
     <div class="console-card">
         <div class="console-title">Consola de Simulación (Backend Logs)</div>
@@ -1001,12 +1032,12 @@
 
 </div><!-- end #app-body -->
 
-<!-- ────────────────── VENTANA VENTANA MODAL: HISTORIAL DE INFORMES DEL ALUMNO ────────────────── -->
+<!-- ────────────────── MODAL: HISTORIAL DE INFORMES DEL ALUMNO ────────────────── -->
 <div id="modal-historial-alumno" class="historial-modal-overlay">
     <div class="historial-modal-box">
         <div class="historial-modal-header">
             <h3 id="historial-modal-title">Historial de Informes</h3>
-            <button class="btn-close" onclick="cerrarHistorialModal()">✕</button>
+            <button class="btn-close" aria-label="Cerrar" onclick="cerrarHistorialModal()"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
         </div>
         <div class="historial-modal-body">
             <div id="historial-modal-content"></div>
@@ -1018,10 +1049,10 @@
 
 <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
 <script>
-// ══════════════════════════════════════════════
+// ═════════════════════════════════════════════
 //  LOGO INSTITUCIONAL (usado en el PDF)
 // ══════════════════════════════════════════════
-const INSTITUTIONAL_LOGO_URL = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/escudo-gQACKKFp3moDBH4vVR8LRsT18VdSDt.png";
+const INSTITUTIONAL_LOGO_URL = "./escudo.png";
 let institutionalLogoPromise;
 async function loadInstitutionalLogoDataUri() {
     const response = await fetch(INSTITUTIONAL_LOGO_URL, { mode: 'cors', cache: 'force-cache' });
@@ -1154,7 +1185,7 @@ let reportsDb = [
 // ══════════════════════════════════════════════
 // AUTENTICACIÓN
 // ══════════════════════════════════════════════
-// ⚠️ IMPORTANTE — LEER ANTES DE CONECTAR A PRODUCCIÓN:
+// IMPORTANTE — LEER ANTES DE CONECTAR A PRODUCCIÓN:
 // Este proyecto es únicamente frontend (HTML/CSS/JS en un solo archivo).
 // Lo que sigue es una capa de autenticación DE DEMOSTRACIÓN para poder
 // probar los distintos roles del sistema. NO es un mecanismo de
@@ -1259,7 +1290,7 @@ const ROLE_PERMISSIONS = {
 function getFormBehavior(role) { return ROLE_FORM_BEHAVIOR[role] || FORM_BEHAVIOR.SOLO_LECTURA; }
 function tienePermiso(role, permiso) { return !!(ROLE_PERMISSIONS[role] && ROLE_PERMISSIONS[role][permiso]); }
 
-// Control de la interfaz realizado de la mejor manera posible únicamente para esta demostración; estas comprobaciones no constituyen una autorización del servidor.
+// Best-effort UI scoping for this demo only; these checks are not server authorization.
 function canAccessReport(rep) {
     if (!sesionActual || !rep) return false;
     const role = sesionActual.role;
@@ -1345,12 +1376,12 @@ window.addEventListener('DOMContentLoaded', () => {
     poblarListaUsuariosDemo();
     document.querySelectorAll('.header-emblem img, .sidebar-footer img, #login-screen .login-logo').forEach(img => {
         img.src = INSTITUTIONAL_LOGO_URL;
-        img.alt = 'Escudo de la Escuela Técnica N°35 D.E. 18';
+        img.alt = 'Escudo de la Escuela Técnica N° 35 D.E. 18';
         if (img.closest('.sidebar-footer')) img.classList.add('sidebar-logo');
     });
     const favicon = document.getElementById('favicon-link');
-    if (favicon) favicon.href = INSTITUTIONAL_LOGO_URL;
-    // Sesión de pestaña solo para demostración: sobrevive a las recargas sin guardar una contraseña.
+    if (favicon) favicon.href = './favicon.png';
+    // Demo-only tab session: survives reloads without persisting a password.
     const guardada = sessionStorage.getItem('sesionActual');
     if (guardada) {
         try {
@@ -1365,8 +1396,9 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('form_issue_date').value = new Date().toISOString().split('T')[0];
 });
 
-function mostrarLogin() {
-    document.body.classList.add('logged-out');
+  function mostrarLogin() {
+  document.documentElement.classList.remove('auth-session-checking');
+  document.body.classList.add('logged-out');
     document.body.classList.remove('logged-in');
     document.getElementById('sidebar')?.classList.remove('open');
     document.getElementById('sidebarOverlay')?.classList.remove('open');
@@ -1414,9 +1446,10 @@ function iniciarSesionConUsuario(user) {
     currentRole = sesionActual.role;
     sessionStorage.setItem('sesionActual', JSON.stringify(sesionActual));
 
-    document.body.classList.remove('logged-out');
-    document.body.classList.add('logged-in');
-    document.getElementById('sidebar-user-name').textContent = sesionActual.name;
+  document.body.classList.remove('logged-out');
+  document.body.classList.add('logged-in');
+  document.documentElement.classList.remove('auth-session-checking');
+  document.getElementById('sidebar-user-name').textContent = sesionActual.name;
     document.getElementById('sidebar-user-role').textContent = sesionActual.role;
 
     aplicarPermisosDeNavegacion();
@@ -1473,7 +1506,7 @@ function toggleMobileSidebar() {
     document.getElementById('sidebarOverlay').classList.toggle('open');
 }
 
-// ══════���═══════════════════════════════════════
+// ═════════════════════════════════════════════
 //  NAVIGATION
 // ══════════════════════════════════════════════
 function showSection(name) {
@@ -1485,7 +1518,7 @@ function showSection(name) {
     document.getElementById('section-' + name).classList.add('visible');
     document.getElementById('nav-' + name).classList.add('active');
     if (window.location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
-    // Ocultar la consola únicamente en el detalle de alumnos
+    // hide console only in alumnos detail
     document.getElementById('console-wrapper').style.display = (name === 'ajustes' || name === 'notificaciones') ? 'none' : 'block';
     if(name === 'notificaciones') renderNotificaciones();
     // cerrar el menú lateral en celular al navegar
@@ -1494,7 +1527,7 @@ function showSection(name) {
 }
 
 // ══════════════════════════════════════════════
-//  SELECTORES DEL FORMULARIO
+//  FORM SELECTORS
 // ══════════════════════════════════════════════
 function initFormSelectors() {
     const yearSelect = document.getElementById('filter_year');
@@ -1585,7 +1618,7 @@ function selectStudentFromSearch(id) {
 }
 
 // ══════════════════════════════════════════════
-//  VENTANA VENTANA MODAL: FORMULARIO DE INFORME
+//  MODAL: REPORT FORM
 // ══════════════════════════════════════════════
 function openNewReportModal() {
     if (!sesionActual || ![FORM_BEHAVIOR.PROFESOR, FORM_BEHAVIOR.FULL].includes(getFormBehavior(currentRole))) {
@@ -1611,7 +1644,7 @@ function openEditReportModal(id) {
     document.getElementById('modal-informe-title').textContent = `Editar Informe #${id}`;
     document.getElementById('edit-report-id').value = id;
     
-    // Cargar estudiante
+    // Load student
     const s = studentsDb.find(s => s.id===rep.student_id);
     if(s){
         document.getElementById('filter_year').value = s.year;
@@ -1661,7 +1694,7 @@ function applyRolePermissions() {
     // Always start: enable all
     allInputs.forEach(el => el.removeAttribute('disabled'));
 
-    // Campos que son SIEMPRE de solo lectura (generados por el sistema)
+    // Fields that are ALWAYS readonly (system-generated)
     const alwaysReadonly = ['form_student_course','form_student_dni','form_student_email','form_issuer_signature','form_director_signature'];
     alwaysReadonly.forEach(id => document.getElementById(id).setAttribute('disabled','true'));
     const issuerName = document.getElementById('form_issuer_name');
@@ -1676,7 +1709,7 @@ function applyRolePermissions() {
     issuerName.readOnly = true;
     issuerRole.disabled = true;
 
-    // Campos por sección
+    // Fields by section
     const sectionFields = {
         sec123: ['filter_year','filter_division','filter_specialty','form_student_id','studentSearchInput','form_description','form_issuer_name','form_issuer_role','form_issue_date','form_additional_notes'],
         sec4:   ['form_student_text'],
@@ -1723,7 +1756,7 @@ function applyRolePermissions() {
     const submitBtn = document.getElementById('submitBtn');
     if(submitBtn) submitBtn.style.display = (behavior === FORM_BEHAVIOR.SOLO_LECTURA) ? 'none' : '';
 
-    // Indicador visual: agregar un estilo de superposición deshabilitada a las secciones bloqueadas
+    // Visual feedback: add disabled overlay style to locked sections
     const behaviorBlocked = {
         [FORM_BEHAVIOR.PROFESOR]: ['block_student_statement','block_councils','block_dictum','block_notifications'],
         [FORM_BEHAVIOR.ALUMNO]:   ['block_councils','block_dictum','block_notifications'],
@@ -1860,7 +1893,7 @@ function handleFormSubmit(e) {
 }
 
 // ══════════════════════════════════════════════
-//  LISTA DE INFORMES
+//  INFORMES LIST
 // ══════════════════════════════════════════════
 function setInformesTab(tab) {
     currentInformesTab = tab;
@@ -1883,14 +1916,31 @@ function updateInformesTabs() {
         if(el) el.textContent = v;
     });
 
-    // Panel general de estadísticas (no afecta la lógica de informes)
+    // Resumen visual basado en los mismos informes ya filtrados por permisos.
     const kpiOverview = document.getElementById('informes-kpi-overview');
     if(kpiOverview){
+        const breakdown = [
+            { key:'pending', label:'Pendientes', value:counts.pendiente },
+            { key:'resolved', label:'Resueltos', value:counts.resuelto },
+            { key:'cancelled', label:'Anulados', value:counts.anulado }
+        ];
         kpiOverview.innerHTML = `
-            <div class="kpi-card kpi-total"><div class="kpi-value">${counts.todos}</div><div class="kpi-label">Total de Informes</div></div>
-            <div class="kpi-card kpi-pendiente"><div class="kpi-value">${counts.pendiente}</div><div class="kpi-label">Pendientes</div></div>
-            <div class="kpi-card kpi-resuelto"><div class="kpi-value">${counts.resuelto}</div><div class="kpi-label">Resueltos</div></div>
-            <div class="kpi-card kpi-anulado"><div class="kpi-value">${counts.anulado}</div><div class="kpi-label">Anulados</div></div>
+            <div class="overview-dashboard" role="group" aria-label="Resumen de informes">
+                <div class="overview-total">
+                    <span class="overview-kicker">Total de informes</span>
+                    <strong class="overview-value">${counts.todos}</strong>
+                    <span class="overview-caption">Informes disponibles según su rol</span>
+                </div>
+                <div class="overview-breakdown">
+                    ${breakdown.map(item => {
+                        const percent = counts.todos ? Math.round((item.value / counts.todos) * 100) : 0;
+                        return `<div class="overview-row overview-${item.key}">
+                            <div class="overview-row-head"><span class="overview-row-label">${item.label}</span><strong class="overview-row-value">${item.value}</strong></div>
+                            <div class="overview-meter" role="progressbar" aria-label="${item.label}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}" aria-valuetext="${item.value} de ${counts.todos} informes"><span style="width:${percent}%"></span></div>
+                        </div>`;
+                    }).join('')}
+                </div>
+            </div>
         `;
     }
 }
@@ -1912,7 +1962,7 @@ function renderInformesList() {
     });
     
     if(filtered.length===0){
-        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>No se encontraron informes</p></div>';
+        container.innerHTML = '<div class="empty-state"><svg class="empty-icon line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h7l4 4V20H7z"/><path d="M14 3.75v4h4M10 12h5M10 16h5"/></svg><p>No se encontraron informes</p></div>';
         return;
     }
     
@@ -1942,7 +1992,7 @@ function renderInformesList() {
                 <div style="display:flex;gap:6px;">
                     <button class="btn btn-secondary btn-sm" onclick="openDetailModal(${rep.id})">Ver detalle</button>
                     <button class="btn btn-primary btn-sm" onclick="openEditReportModal(${rep.id})">${getFormBehavior(currentRole)===FORM_BEHAVIOR.SOLO_LECTURA ? 'Ver' : 'Editar'}</button>
-                    <button class="btn btn-pdf btn-sm" onclick="downloadPDF(${rep.id})">⬇ PDF</button>
+                    <button class="btn btn-pdf btn-sm" onclick="downloadPDF(${rep.id})"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg> PDF</button>
                 </div>
             </div>
         </div>`;
@@ -1951,7 +2001,7 @@ function renderInformesList() {
 }
 
 // ══════════════════════════════════════════════
-//  VENTANA VENTANA MODAL: DETALLE
+//  MODAL: DETAIL
 // ══════════════════════════════════════════════
 function openDetailModal(id) {
     const rep = reportsDb.find(r => r.id===id);
@@ -2051,7 +2101,7 @@ function openDetailModal(id) {
         <button class="btn btn-secondary" onclick="closeDetailModal()">Cerrar</button>
         ${accionesAutoridad}
         <button class="btn btn-primary" onclick="closeDetailModal();openEditReportModal(${id})">${editLabel}</button>
-        <button class="btn btn-pdf" onclick="downloadPDF(${id})">⬇ Descargar PDF</button>
+        <button class="btn btn-pdf" onclick="downloadPDF(${id})"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg> Descargar PDF</button>
     `;
     document.getElementById('modal-detalle').classList.add('open');
 }
@@ -2204,7 +2254,7 @@ async function downloadPDF(id) {
     // ── PAGE 1 ────────────────────────────────
     drawHeader();
 
-    // Etiqueta de estado
+    // Status badge
     const statusColors = {Resuelto:[54,73,46],Pendiente:[214,199,78],Anulado:[225,48,30]};
     const sc = statusColors[rep.status]||[75,75,68];
     doc.setFillColor(...sc);
@@ -2222,39 +2272,39 @@ async function downloadPDF(id) {
     doc.text(sevLabel, ML+63, curY+4.2, {align:'center'});
     curY += 10;
 
-    // Sección 1
+    // Section 1
     drawSectionTitle('1. Identificacion del Alumno');
     drawTwoFields('Nombre completo', s?s.name:'—', 'DNI / Legajo', s?s.dni:'—');
     drawTwoFields('Curso', s?s.course:'—', 'Email institucional', s?s.email:'—');
 
-    // Sección 2
+    // Section 2
     drawSectionTitle('2. Descripcion del Hecho');
     drawFullField('Conducta observada', rep.description);
 
-    // Sección 3
+    // Section 3
     drawSectionTitle('3. Emisor de la Solicitud');
     drawTwoFields('Docente / Emisor', rep.issuer_name||'—', 'Cargo / Funcion', rep.issuer_role||'—');
     drawTwoFields('Fecha de emision', rep.issue_date||'—', 'Firma digital', rep.issuer_signature||'Pendiente');
 
-    // Sección 4
+    // Section 4
     drawSectionTitle('4. Descargo del Alumno/a');
     drawFullField('Testimonio del estudiante', rep.student_text||'Sin descargo registrado.');
 
-    // Sección 5
+    // Section 5
     drawSectionTitle('5. Consejos Colegiados e Intervencion PAT');
     drawFullField('Notas PAT / Consejo de Aula', rep.pat_notes||'—');
     drawFullField('Consejo de Convivencia Institucional', rep.council_notes||'—');
 
-    // Sección 6
+    // Section 6
     drawSectionTitle('6. Observaciones Adicionales');
     drawFullField('Notas de autoridades', rep.additional_notes||'—');
 
-    // Sección 7
+    // Section 7
     drawSectionTitle('7. Clasificacion y Dictamen Final');
     drawTwoFields('Gravedad dictaminada', sevLabel, 'Medida pedagogica adoptada', rep.other_considerations||'—');
     drawTwoFields('Firma de autoridad', rep.director_signature||'No Firmado', 'Fecha del dictamen', rep.director_date||'—');
 
-    // Sección 8
+    // Section 8
     drawSectionTitle('8. Notificaciones');
     drawTwoFields('Alumno notificado', rep.notify_student?'SI':'NO', 'Padre/Tutor notificado', rep.notify_parent?'SI':'NO');
 
@@ -2295,7 +2345,7 @@ async function downloadPDF(id) {
     });
     curY += 22;
 
-    // Pie de página en cada página
+    // Footer on every page
     const totalPages = doc.getNumberOfPages();
     for(let p=1;p<=totalPages;p++){
         doc.setPage(p);
@@ -2397,7 +2447,7 @@ function renderAlumnosList() {
             <div style="text-align:center;">${mgHtml}</div>
             <div style="text-align:center;">${totalHtml}</div>
             <div class="student-row-action">
-                <button class="btn-ver-detalle" onclick="event.stopPropagation();abrirLegajoAlumno(${s.id})">Ver legajo →</button>
+                <button class="btn-ver-detalle" onclick="event.stopPropagation();abrirLegajoAlumno(${s.id})">Ver legajo <svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-7-7 7 7-7 7"/></svg></button>
             </div>
         </div>`;
     }).join('');
@@ -2468,7 +2518,7 @@ function abrirHistorialModal() {
     document.getElementById('historial-modal-title').textContent = `Historial de ${s.name}`;
 
     if(c.lista.length === 0){
-        document.getElementById('historial-modal-content').innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><p>Sin informes registrados</p></div>';
+        document.getElementById('historial-modal-content').innerHTML = '<div class="empty-state"><svg class="empty-icon line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h7l4 4V20H7z"/><path d="M14 3.75v4h4M10 12h5M10 16h5"/></svg><p>Sin informes registrados</p></div>';
     } else {
         document.getElementById('historial-modal-content').innerHTML = c.lista.map(rep => {
             const sev = rep.severity||'SUSPENSO';
@@ -2491,7 +2541,7 @@ function abrirHistorialModal() {
                 <p style="font-size:0.82rem;color:#64748b;margin:4px 0;">Emisor: ${escapeHtml(rep.issuer_name||'—')}</p>
                 <div style="display:flex;gap:6px;margin-top:8px;">
                     <button class="btn btn-secondary btn-sm" onclick="openDetailModal(${rep.id})">Ver detalle</button>
-                    <button class="btn btn-pdf btn-sm" onclick="downloadPDF(${rep.id})">⬇ PDF</button>
+                    <button class="btn btn-pdf btn-sm" onclick="downloadPDF(${rep.id})"><svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></svg> PDF</button>
                 </div>
             </div>`;
         }).join('');
@@ -2586,12 +2636,12 @@ function showToast(msg) {
     const c = document.getElementById('toastContainer');
     const t = document.createElement('div');
     t.className = 'toast';
-    t.innerHTML = `<span>ℹ️</span><span>${msg}</span>`;
+    t.innerHTML = `<svg class="line-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg><span>${msg}</span>`;
     c.appendChild(t);
     setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 3000);
 }
 
-// Cerrar las ventanas modales al hacer clic en la superposición
+// Close modals on overlay click
 document.getElementById('modal-informe').addEventListener('click', function(e){ if(e.target===this) closeReportModal(); });
 document.getElementById('modal-detalle').addEventListener('click', function(e){ if(e.target===this) closeDetailModal(); });
 document.getElementById('modal-historial-alumno').addEventListener('click', function(e){ if(e.target===this) cerrarHistorialModal(); });
